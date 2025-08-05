@@ -1,9 +1,9 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
-import Map, { Marker } from "react-map-gl/mapbox";
+import { useState, useMemo, useEffect, useRef } from "react";
+import Map, { Marker, Popup } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { events } from "../events";
-import { Card } from "@/components/ui/card";
+import EventCard from "./EventCard";
 
 const MAPBOX_TOKEN = "pk.eyJ1IjoiYXNlcDEyIiwiYSI6ImNtOWhlczFscDA0M3kyb3E0c3B2M3JpczgifQ.sysimBWh0Tepfm3GFp1Nkg";
 
@@ -24,6 +24,9 @@ export default function SportMap() {
   const [userLoc, setUserLoc] = useState({ lat: -6.2, lng: 106.816666 });
   const [radius, setRadius] = useState(10); // km
   const [selected, setSelected] = useState(null);
+  const [popupInfo, setPopupInfo] = useState(null);
+  const cardRefs = useRef({});
+  const containerRef = useRef(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -44,6 +47,43 @@ export default function SportMap() {
       ),
     [userLoc, radius]
   );
+
+  const handleMarkerClick = (event) => {
+    setSelected(event.id);
+    setPopupInfo(event);
+    
+    // Auto-scroll to the selected card
+    setTimeout(() => {
+      const cardElement = cardRefs.current[event.id];
+      const containerElement = containerRef.current;
+      
+      if (cardElement && containerElement) {
+        const cardRect = cardElement.getBoundingClientRect();
+        const containerRect = containerElement.getBoundingClientRect();
+        
+        const scrollTop = containerElement.scrollTop;
+        const cardTop = cardElement.offsetTop;
+        const containerHeight = containerElement.clientHeight;
+        
+        // Calculate the scroll position to center the card
+        const targetScrollTop = cardTop - (containerHeight / 2) + (cardRect.height / 2);
+        
+        containerElement.scrollTo({
+          top: targetScrollTop,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  };
+
+  const handleCardClick = (eventId) => {
+    setSelected(eventId);
+    setPopupInfo(null);
+  };
+
+  const closePopup = () => {
+    setPopupInfo(null);
+  };
 
   return (
     <div className="flex gap-4 flex-col md:flex-row">
@@ -67,9 +107,28 @@ export default function SportMap() {
               longitude={e.lng}
               latitude={e.lat}
               color={selected === e.id ? "red" : "green"}
-              onClick={() => setSelected(e.id)}
+              onClick={() => handleMarkerClick(e)}
             />
           ))}
+          
+          {/* Popup for selected marker */}
+          {popupInfo && (
+            <Popup
+              longitude={popupInfo.lng}
+              latitude={popupInfo.lat}
+              anchor="bottom"
+              onClose={closePopup}
+              closeButton={true}
+              closeOnClick={false}
+              className="z-10"
+            >
+              <div className="p-2">
+                <h3 className="font-bold text-sm">{popupInfo.name}</h3>
+                <p className="text-xs text-gray-600">{popupInfo.category}</p>
+                <p className="text-xs text-gray-500">{popupInfo.location}</p>
+              </div>
+            </Popup>
+          )}
         </Map>
         <div className="mt-2">
           <label>
@@ -85,18 +144,23 @@ export default function SportMap() {
           </label>
         </div>
       </div>
-      <div className="md:w-1/3 w-full flex flex-col gap-2 mt-4 md:mt-0">
+      <div 
+        ref={containerRef}
+        className="md:w-1/3 w-full flex flex-col gap-4 mt-4 md:mt-0 max-h-[500px] overflow-y-auto scroll-smooth"
+      >
         {filteredEvents.map((e) => (
-          <Card
+          <div
             key={e.id}
-            className={`p-4 cursor-pointer ${
-              selected === e.id ? "border-2 border-blue-500" : ""
-            }`}
-            onClick={() => setSelected(e.id)}
+            ref={(el) => {
+              cardRefs.current[e.id] = el;
+            }}
           >
-            <h3 className="font-bold">{e.name}</h3>
-            <p>{e.description}</p>
-          </Card>
+            <EventCard
+              event={e}
+              isSelected={selected === e.id}
+              onClick={() => handleCardClick(e.id)}
+            />
+          </div>
         ))}
       </div>
     </div>
