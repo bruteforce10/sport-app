@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect, useRef } from "react";
-import Map, { Marker, Popup } from "react-map-gl/mapbox";
+import Map, { Marker, Popup, Source, Layer } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { events } from "../events";
 import EventCard from "./EventCard";
@@ -18,6 +18,43 @@ function haversine(lat1, lon1, lat2, lon2) {
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
+}
+
+// Fungsi untuk membuat GeoJSON lingkaran
+function createGeoJSONCircle(center, radiusInKm) {
+  const points = 64;
+  const coords = {
+    latitude: center.lat,
+    longitude: center.lng
+  };
+  
+  const km = radiusInKm;
+  const ret = [];
+  const distanceX = km / (111.320 * Math.cos((coords.latitude * Math.PI) / 180));
+  const distanceY = km / 110.574;
+
+  let theta, x, y;
+  for (let i = 0; i < points; i++) {
+    theta = (i / points) * (2 * Math.PI);
+    x = distanceX * Math.cos(theta);
+    y = distanceY * Math.sin(theta);
+    ret.push([coords.longitude + x, coords.latitude + y]);
+  }
+  ret.push(ret[0]); // Tutup poligon
+
+  return {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: [ret]
+        },
+        properties: {}
+      }
+    ]
+  };
 }
 
 export default function SportMap() {
@@ -45,6 +82,12 @@ export default function SportMap() {
         (e) =>
           haversine(userLoc.lat, userLoc.lng, e.lat, e.lng) <= radius
       ),
+    [userLoc, radius]
+  );
+
+  // Data GeoJSON untuk lingkaran radius
+  const radiusData = useMemo(
+    () => createGeoJSONCircle(userLoc, radius),
     [userLoc, radius]
   );
 
@@ -87,7 +130,7 @@ export default function SportMap() {
 
   return (
     <div className="flex gap-4 flex-col md:flex-row">
-      <div className="md:w-2/3 w-full h-[400px] md:h-[500px]">
+      <div className="md:w-2/3 w-full h-[400px] md:h-[500px] relative">
         <Map
           mapboxAccessToken={MAPBOX_TOKEN}
           initialViewState={{
@@ -98,6 +141,27 @@ export default function SportMap() {
           style={{ width: "100%", height: "100%" }}
           mapStyle="mapbox://styles/mapbox/streets-v11"
         >
+          {/* Radius Overlay */}
+          <Source id="radius-circle" type="geojson" data={radiusData}>
+            <Layer
+              id="radius-circle-fill"
+              type="fill"
+              paint={{
+                'fill-color': '#3B82F6',
+                'fill-opacity': 0.1
+              }}
+            />
+            <Layer
+              id="radius-circle-border"
+              type="line"
+              paint={{
+                'line-color': '#3B82F6',
+                'line-width': 2,
+                'line-opacity': 0.6
+              }}
+            />
+          </Source>
+
           {/* Marker user */}
           <Marker longitude={userLoc.lng} latitude={userLoc.lat} color="blue" />
           {/* Marker event */}
@@ -129,6 +193,14 @@ export default function SportMap() {
               </div>
             </Popup>
           )}
+
+          {/* Kotak informasi jumlah event dalam radius */}
+          <div className="absolute top-4 left-4 bg-white p-3 rounded-md shadow-md z-10 border border-gray-200">
+            <h3 className="font-bold text-sm mb-1">Informasi Radius</h3>
+            <p className="text-sm">
+              <span className="font-medium">{filteredEvents.length}</span> event dalam radius {radius} km
+            </p>
+          </div>
         </Map>
         <div className="mt-2">
           <label>
