@@ -5,7 +5,8 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { events } from "../events";
 import EventCard from "./EventCard";
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoiYXNlcDEyIiwiYSI6ImNtOWhlczFscDA0M3kyb3E0c3B2M3JpczgifQ.sysimBWh0Tepfm3GFp1Nkg";
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoiYXNlcDEyIiwiYSI6ImNtOWhlczFscDA0M3kyb3E0c3B2M3JpczgifQ.sysimBWh0Tepfm3GFp1Nkg";
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -15,7 +16,8 @@ function haversine(lat1, lon1, lat2, lon2) {
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
       Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -25,12 +27,12 @@ function createGeoJSONCircle(center, radiusInKm) {
   const points = 64;
   const coords = {
     latitude: center.lat,
-    longitude: center.lng
+    longitude: center.lng,
   };
-  
+
   const km = radiusInKm;
   const ret = [];
-  const distanceX = km / (111.320 * Math.cos((coords.latitude * Math.PI) / 180));
+  const distanceX = km / (111.32 * Math.cos((coords.latitude * Math.PI) / 180));
   const distanceY = km / 110.574;
 
   let theta, x, y;
@@ -49,11 +51,11 @@ function createGeoJSONCircle(center, radiusInKm) {
         type: "Feature",
         geometry: {
           type: "Polygon",
-          coordinates: [ret]
+          coordinates: [ret],
         },
-        properties: {}
-      }
-    ]
+        properties: {},
+      },
+    ],
   };
 }
 
@@ -64,13 +66,25 @@ export default function SportMap() {
   const [popupInfo, setPopupInfo] = useState(null);
   const cardRefs = useRef({});
   const containerRef = useRef(null);
+  const mapRef = useRef(null);
+  const [viewState, setViewState] = useState({
+    longitude: userLoc.lng,
+    latitude: userLoc.lat,
+    zoom: 12,
+  });
 
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((pos) => {
-        setUserLoc({
+        const newLoc = {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
+        };
+        setUserLoc(newLoc);
+        setViewState({
+          longitude: newLoc.lng,
+          latitude: newLoc.lat,
+          zoom: 12,
         });
       });
     }
@@ -79,8 +93,7 @@ export default function SportMap() {
   const filteredEvents = useMemo(
     () =>
       events.filter(
-        (e) =>
-          haversine(userLoc.lat, userLoc.lng, e.lat, e.lng) <= radius
+        (e) => haversine(userLoc.lat, userLoc.lng, e.lat, e.lng) <= radius
       ),
     [userLoc, radius]
   );
@@ -94,34 +107,54 @@ export default function SportMap() {
   const handleMarkerClick = (event) => {
     setSelected(event.id);
     setPopupInfo(event);
-    
+
+    // Zoom dan fokus ke marker yang diklik
+    setViewState({
+      longitude: event.lng,
+      latitude: event.lat,
+      zoom: 15,
+      transitionDuration: 1000,
+    });
+
     // Auto-scroll to the selected card
     setTimeout(() => {
       const cardElement = cardRefs.current[event.id];
       const containerElement = containerRef.current;
-      
+
       if (cardElement && containerElement) {
         const cardRect = cardElement.getBoundingClientRect();
         const containerRect = containerElement.getBoundingClientRect();
-        
+
         const scrollTop = containerElement.scrollTop;
         const cardTop = cardElement.offsetTop;
         const containerHeight = containerElement.clientHeight;
-        
+
         // Calculate the scroll position to center the card
-        const targetScrollTop = cardTop - (containerHeight / 2) + (cardRect.height / 2);
-        
+        const targetScrollTop =
+          cardTop - containerHeight / 2 + cardRect.height / 2;
+
         containerElement.scrollTo({
           top: targetScrollTop,
-          behavior: 'smooth'
+          behavior: "smooth",
         });
       }
     }, 100);
   };
 
   const handleCardClick = (eventId) => {
-    setSelected(eventId);
-    setPopupInfo(null);
+    const event = filteredEvents.find((e) => e.id === eventId);
+    if (event) {
+      setSelected(eventId);
+      setPopupInfo(null);
+
+      // Zoom dan fokus ke marker yang terkait dengan card yang diklik
+      setViewState({
+        longitude: event.lng,
+        latitude: event.lat,
+        zoom: 15,
+        transitionDuration: 1000,
+      });
+    }
   };
 
   const closePopup = () => {
@@ -132,12 +165,10 @@ export default function SportMap() {
     <div className="flex gap-4 flex-col md:flex-row">
       <div className="md:w-2/3 w-full h-[400px] md:h-[500px] relative">
         <Map
+          ref={mapRef}
           mapboxAccessToken={MAPBOX_TOKEN}
-          initialViewState={{
-            longitude: userLoc.lng,
-            latitude: userLoc.lat,
-            zoom: 12,
-          }}
+          {...viewState}
+          onMove={(evt) => setViewState(evt.viewState)}
           style={{ width: "100%", height: "100%" }}
           mapStyle="mapbox://styles/mapbox/streets-v11"
         >
@@ -147,17 +178,17 @@ export default function SportMap() {
               id="radius-circle-fill"
               type="fill"
               paint={{
-                'fill-color': '#3B82F6',
-                'fill-opacity': 0.1
+                "fill-color": "#3B82F6",
+                "fill-opacity": 0.1,
               }}
             />
             <Layer
               id="radius-circle-border"
               type="line"
               paint={{
-                'line-color': '#3B82F6',
-                'line-width': 2,
-                'line-opacity': 0.6
+                "line-color": "#3B82F6",
+                "line-width": 2,
+                "line-opacity": 0.6,
               }}
             />
           </Source>
@@ -174,7 +205,7 @@ export default function SportMap() {
               onClick={() => handleMarkerClick(e)}
             />
           ))}
-          
+
           {/* Popup for selected marker */}
           {popupInfo && (
             <Popup
@@ -198,13 +229,14 @@ export default function SportMap() {
           <div className="absolute top-4 left-4 bg-white p-3 rounded-md shadow-md z-10 border border-gray-200">
             <h3 className="font-bold text-sm mb-1">Informasi Radius</h3>
             <p className="text-sm">
-              <span className="font-medium">{filteredEvents.length}</span> event dalam radius {radius} km
+              <span className="font-medium">{filteredEvents.length}</span> event
+              dalam radius {radius} km
             </p>
           </div>
         </Map>
         <div className="mt-2">
           <label>
-            Radius: {" "}
+            Radius:{" "}
             <input
               type="range"
               min={1}
@@ -216,7 +248,7 @@ export default function SportMap() {
           </label>
         </div>
       </div>
-      <div 
+      <div
         ref={containerRef}
         className="md:w-1/3 w-full flex flex-col gap-4 mt-4 md:mt-0 max-h-[500px] overflow-y-auto scroll-smooth"
       >
