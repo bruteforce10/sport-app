@@ -1,29 +1,5 @@
 import React from "react";
-import { Badge, Volleyball } from "lucide-react";
-import {
-  MdOutlineSportsSoccer,
-  MdOutlineSportsTennis,
-  MdOutlineSportsBasketball,
-} from "react-icons/md";
-import { TbSoccerField } from "react-icons/tb";
-
-const SPORT_COLORS = {
-  Badminton: "#FF6B6B", // Merah
-  Futsal: "#4ECDC4", // Cyan
-  Basketball: "#45B7D1", // Biru
-  Tennis: "#96CEB4", // Hijau
-  Football: "#FFEAA7", // Kuning
-  Volleyball: "#DDA0DD", // Ungu
-};
-
-const SPORT_ICONS = {
-  Badminton: Badge,
-  Futsal: MdOutlineSportsSoccer,
-  Basketball: MdOutlineSportsBasketball,
-  Tennis: MdOutlineSportsTennis,
-  Football: TbSoccerField,
-  Volleyball: Volleyball,
-};
+import { SPORT_COLORS, SPORT_ICONS } from "@/constant/ASSET";
 
 const Legend = () => {
   return (

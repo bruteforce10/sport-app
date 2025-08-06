@@ -4,37 +4,12 @@ import Map, { Marker, Popup, Source, Layer } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { events } from "../events";
 import EventCard from "./EventCard";
-import { Badge, Volleyball } from "lucide-react";
-import {
-  MdOutlineSportsSoccer,
-  MdOutlineSportsTennis,
-  MdOutlineSportsBasketball,
-} from "react-icons/md";
-import { TbSoccerField } from "react-icons/tb";
+import { Badge } from "lucide-react";
 import Legend from "./Legend";
+import { SPORT_COLORS, SPORT_ICONS } from "@/constant/ASSET";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiYXNlcDEyIiwiYSI6ImNtOWhlczFscDA0M3kyb3E0c3B2M3JpczgifQ.sysimBWh0Tepfm3GFp1Nkg";
-
-// Color mapping untuk kategori olahraga
-const SPORT_COLORS = {
-  Badminton: "#FF6B6B", // Merah
-  Futsal: "#4ECDC4", // Cyan
-  Basketball: "#45B7D1", // Biru
-  Tennis: "#96CEB4", // Hijau
-  Football: "#FFEAA7", // Kuning
-  Volleyball: "#DDA0DD", // Ungu
-};
-
-// Icon mapping untuk kategori olahraga
-const SPORT_ICONS = {
-  Badminton: Badge,
-  Futsal: MdOutlineSportsSoccer,
-  Basketball: MdOutlineSportsBasketball,
-  Tennis: MdOutlineSportsTennis,
-  Football: TbSoccerField,
-  Volleyball: Volleyball,
-};
 
 // Custom Marker Component dengan concentric circles dan icon
 function CustomMarker({ sport, isSelected, onClick }) {
