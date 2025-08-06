@@ -79,6 +79,32 @@ function haversine(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// Fungsi untuk menghitung estimasi durasi perjalanan
+function calculateTravelTime(distance, transportMode) {
+  // Kecepatan rata-rata dalam km/jam untuk setiap mode transportasi
+  const speeds = {
+    walking: 5, // 5 km/jam untuk berjalan kaki
+    motorcycle: 30, // 30 km/jam untuk motor (dalam kota)
+    driving: 25, // 25 km/jam untuk mobil (dalam kota dengan traffic)
+  };
+  
+  const speed = speeds[transportMode] || speeds.driving;
+  const timeInHours = distance / speed;
+  const timeInMinutes = Math.round(timeInHours * 60);
+  
+  if (timeInMinutes < 60) {
+    return `${timeInMinutes} menit`;
+  } else {
+    const hours = Math.floor(timeInMinutes / 60);
+    const minutes = timeInMinutes % 60;
+    if (minutes === 0) {
+      return `${hours} jam`;
+    } else {
+      return `${hours} jam ${minutes} menit`;
+    }
+  }
+}
+
 // Fungsi untuk membuat GeoJSON lingkaran
 function createGeoJSONCircle(center, radiusInKm) {
   const points = 64;
@@ -121,6 +147,8 @@ export default function SportMap() {
   const [radius, setRadius] = useState(10); // km
   const [selected, setSelected] = useState(null);
   const [popupInfo, setPopupInfo] = useState(null);
+  const [travelTimes, setTravelTimes] = useState({});
+  const [selectedTransportMode, setSelectedTransportMode] = useState('driving');
   const cardRefs = useRef({});
   const containerRef = useRef(null);
   const mapRef = useRef(null);
@@ -278,10 +306,49 @@ export default function SportMap() {
               closeOnClick={false}
               className="z-10"
             >
-              <div className="p-2">
-                <h3 className="font-bold text-sm">{popupInfo.name}</h3>
-                <p className="text-xs text-gray-600">{popupInfo.category}</p>
-                <p className="text-xs text-gray-500">{popupInfo.location}</p>
+              <div className="p-3 min-w-[200px]">
+                <h3 className="font-bold text-sm mb-2">{popupInfo.name}</h3>
+                <p className="text-xs text-gray-600 mb-2">
+                  Jarak: {haversine(userLoc.lat, userLoc.lng, popupInfo.lat, popupInfo.lng).toFixed(1)} km
+                </p>
+                
+                {/* Transport Mode Selection */}
+                <div className="mb-2">
+                  <label className="text-xs font-medium text-gray-700 mb-1 block">Mode Transportasi:</label>
+                  <div className="flex gap-1">
+                    {[
+                      { value: 'walking', label: '🚶', title: 'Berjalan Kaki' },
+                      { value: 'motorcycle', label: '🏍️', title: 'Motor' },
+                      { value: 'driving', label: '🚗', title: 'Mobil' }
+                    ].map((mode) => (
+                      <button
+                        key={mode.value}
+                        onClick={() => setSelectedTransportMode(mode.value)}
+                        className={`px-2 py-1 text-xs rounded border transition-colors ${
+                          selectedTransportMode === mode.value
+                            ? 'bg-blue-500 text-white border-blue-500'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                        title={mode.title}
+                      >
+                        {mode.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Travel Time Display */}
+                <div className="bg-gray-50 p-2 rounded">
+                  <p className="text-xs text-gray-700">
+                    <span className="font-medium">Estimasi Waktu:</span>
+                  </p>
+                  <p className="text-sm font-semibold text-blue-600">
+                    {calculateTravelTime(
+                      haversine(userLoc.lat, userLoc.lng, popupInfo.lat, popupInfo.lng),
+                      selectedTransportMode
+                    )}
+                  </p>
+                </div>
               </div>
             </Popup>
           )}
