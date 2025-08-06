@@ -4,9 +4,91 @@ import Map, { Marker, Popup, Source, Layer } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { events } from "../events";
 import EventCard from "./EventCard";
+import { Badge, Volleyball } from "lucide-react";
+import {
+  MdOutlineSportsSoccer,
+  MdOutlineSportsTennis,
+  MdOutlineSportsBasketball,
+} from "react-icons/md";
+import { TbSoccerField } from "react-icons/tb";
+import Legend from "./Legend";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiYXNlcDEyIiwiYSI6ImNtOWhlczFscDA0M3kyb3E0c3B2M3JpczgifQ.sysimBWh0Tepfm3GFp1Nkg";
+
+// Color mapping untuk kategori olahraga
+const SPORT_COLORS = {
+  Badminton: "#FF6B6B", // Merah
+  Futsal: "#4ECDC4", // Cyan
+  Basketball: "#45B7D1", // Biru
+  Tennis: "#96CEB4", // Hijau
+  Football: "#FFEAA7", // Kuning
+  Volleyball: "#DDA0DD", // Ungu
+};
+
+// Icon mapping untuk kategori olahraga
+const SPORT_ICONS = {
+  Badminton: Badge,
+  Futsal: MdOutlineSportsSoccer,
+  Basketball: MdOutlineSportsBasketball,
+  Tennis: MdOutlineSportsTennis,
+  Football: TbSoccerField,
+  Volleyball: Volleyball,
+};
+
+// Custom Marker Component dengan concentric circles dan icon
+function CustomMarker({ sport, isSelected, onClick }) {
+  const color = SPORT_COLORS[sport] || "#666666";
+  const IconComponent = SPORT_ICONS[sport] || Badge;
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        cursor: "pointer",
+        transform: isSelected ? "scale(1.2)" : "scale(1)",
+        transition: "transform 0.2s ease",
+        filter: isSelected ? "drop-shadow(0 0 8px rgba(0,0,0,0.3))" : "none",
+      }}
+    >
+      {/* Outer circle (halo effect) */}
+      <div
+        style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "50%",
+          backgroundColor: color,
+          opacity: 0.3,
+          position: "absolute",
+          top: "-20px",
+          left: "-20px",
+          zIndex: 1,
+        }}
+        className="animate-ping"
+      />
+      {/* Inner circle (solid) */}
+      <div
+        style={{
+          width: "32px",
+          height: "32px",
+          borderRadius: "50%",
+          backgroundColor: color,
+          position: "absolute",
+          top: "-16px",
+          left: "-16px",
+          zIndex: 2,
+          border: "2px solid white",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <IconComponent size={16} color="white" />
+      </div>
+    </div>
+  );
+}
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -123,9 +205,7 @@ export default function SportMap() {
 
       if (cardElement && containerElement) {
         const cardRect = cardElement.getBoundingClientRect();
-        const containerRect = containerElement.getBoundingClientRect();
 
-        const scrollTop = containerElement.scrollTop;
         const cardTop = cardElement.offsetTop;
         const containerHeight = containerElement.clientHeight;
 
@@ -194,16 +274,22 @@ export default function SportMap() {
           </Source>
 
           {/* Marker user */}
-          <Marker longitude={userLoc.lng} latitude={userLoc.lat} color="blue" />
-          {/* Marker event */}
+          <Marker longitude={userLoc.lng} latitude={userLoc.lat} color="red" />
+
+          {/* Custom Marker event dengan concentric circles */}
           {filteredEvents.map((e) => (
             <Marker
               key={e.id}
               longitude={e.lng}
               latitude={e.lat}
-              color={selected === e.id ? "red" : "green"}
               onClick={() => handleMarkerClick(e)}
-            />
+            >
+              <CustomMarker
+                sport={e.category}
+                isSelected={selected === e.id}
+                onClick={() => handleMarkerClick(e)}
+              />
+            </Marker>
           ))}
 
           {/* Popup for selected marker */}
@@ -233,6 +319,9 @@ export default function SportMap() {
               dalam radius {radius} km
             </p>
           </div>
+
+          {/* Legend */}
+          <Legend />
         </Map>
         <div className="mt-2">
           <label>
