@@ -34,7 +34,7 @@ function DrawerOverlay({ className, ...props }) {
   );
 }
 
-function DrawerContent({ className, children, ...props }) {
+function DrawerContent({ className, children, onInteractOutside, ...props }) {
   return (
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
@@ -48,6 +48,11 @@ function DrawerContent({ className, children, ...props }) {
           "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
           className
         )}
+        onInteractOutside={(e) => {
+          // Prevent closing when clicking outside the drawer
+          try { onInteractOutside?.(e); } catch {}
+          e.preventDefault();
+        }}
         {...props}
       >
         <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />

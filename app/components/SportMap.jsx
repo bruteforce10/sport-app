@@ -125,6 +125,7 @@ export default function SportMap() {
 
   const closePopup = () => {
     setPopupInfo(null);
+    setIsDrawerOpen(false);
   };
 
   const renderMap = () => (
