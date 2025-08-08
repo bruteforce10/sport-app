@@ -31,6 +31,7 @@ export default function SportMap() {
   const cardRefs = useRef({});
   const containerRef = useRef(null);
   const mapRef = useRef(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [viewState, setViewState] = useState({
     longitude: userLoc.lng,
     latitude: userLoc.lat,
@@ -79,6 +80,10 @@ export default function SportMap() {
       zoom: 15,
       transitionDuration: 1000,
     });
+    // Open the drawer on mobile
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsDrawerOpen(true);
+    }
 
     // Auto-scroll to the selected card
     setTimeout(() => {
@@ -87,7 +92,6 @@ export default function SportMap() {
 
       if (cardElement && containerElement) {
         const cardRect = cardElement.getBoundingClientRect();
-
         const cardTop = cardElement.offsetTop;
         const containerHeight = containerElement.clientHeight;
 
@@ -290,7 +294,7 @@ export default function SportMap() {
       <div className="relative md:hidden h-[calc(100vh-64px)]">
         {renderMap()}
 
-        <Drawer>
+        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <DrawerTrigger>
             <div className="absolute w-full min-h-40 -bottom-14 bg-white px-4 py-2 rounded-md ">
               <div className="w-24 h-1.5 mt-2 mx-auto bg-gray-100 rounded-full" />
