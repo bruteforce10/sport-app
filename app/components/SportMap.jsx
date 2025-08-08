@@ -63,6 +63,15 @@ export default function SportMap() {
     [userLoc, radius]
   );
 
+  // Reorder events for mobile so that the selected one appears first
+  const mobileOrderedEvents = useMemo(() => {
+    if (!selected) return filteredEvents;
+    const selectedEvent = filteredEvents.find((e) => e.id === selected);
+    if (!selectedEvent) return filteredEvents;
+    const others = filteredEvents.filter((e) => e.id !== selected);
+    return [selectedEvent, ...others];
+  }, [filteredEvents, selected]);
+
   // Data GeoJSON untuk lingkaran radius
   const radiusData = useMemo(
     () => createGeoJSONCircle(userLoc, radius),
@@ -85,24 +94,21 @@ export default function SportMap() {
       setIsDrawerOpen(true);
     }
 
-    // Auto-scroll to the selected card
+    // Scroll behavior: desktop centers to card, mobile scrolls to top
     setTimeout(() => {
-      const cardElement = cardRefs.current[event.id];
       const containerElement = containerRef.current;
-
-      if (cardElement && containerElement) {
+      if (!containerElement) return;
+      if (typeof window !== "undefined" && window.innerWidth < 768) {
+        containerElement.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      const cardElement = cardRefs.current[event.id];
+      if (cardElement) {
         const cardRect = cardElement.getBoundingClientRect();
         const cardTop = cardElement.offsetTop;
         const containerHeight = containerElement.clientHeight;
-
-        // Calculate the scroll position to center the card
-        const targetScrollTop =
-          cardTop - containerHeight / 2 + cardRect.height / 2;
-
-        containerElement.scrollTo({
-          top: targetScrollTop,
-          behavior: "smooth",
-        });
+        const targetScrollTop = cardTop - containerHeight / 2 + cardRect.height / 2;
+        containerElement.scrollTo({ top: targetScrollTop, behavior: "smooth" });
       }
     }, 100);
   };
@@ -308,7 +314,7 @@ export default function SportMap() {
                   ref={containerRef}
                   className="max-h-[40vh] overflow-y-auto scroll-smooth space-y-4"
                 >
-                  {filteredEvents.map((e) => (
+                {mobileOrderedEvents.map((e) => (
                     <div
                       key={e.id}
                       ref={(el) => {
