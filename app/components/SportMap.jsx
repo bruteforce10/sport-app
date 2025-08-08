@@ -8,10 +8,19 @@ import EventCard from "./EventCard";
 import Legend from "./Legend";
 import CustomMarker from "./CustomMarker";
 import { haversine, calculateTravelTime, createGeoJSONCircle } from "@/lib/geo";
+import {
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiYXNlcDEyIiwiYSI6ImNtOWhlczFscDA0M3kyb3E0c3B2M3JpczgifQ.sysimBWh0Tepfm3GFp1Nkg";
-
 
 export default function SportMap() {
   const [userLoc, setUserLoc] = useState({ lat: -6.2, lng: 106.816666 });
@@ -120,7 +129,7 @@ export default function SportMap() {
       mapboxAccessToken={MAPBOX_TOKEN}
       {...viewState}
       onMove={(evt) => setViewState(evt.viewState)}
-      style={{ width: "100%", height: "40%" }}
+      style={{ height: "calc(100% - 64px)", width: "100%" }}
       mapStyle="mapbox://styles/mapbox/streets-v11"
     >
       {/* Radius Overlay */}
@@ -239,7 +248,8 @@ export default function SportMap() {
       <div className="absolute top-4 left-4 bg-white p-3 rounded-md shadow-md z-10 border border-gray-200 w-64">
         <h3 className="font-bold text-sm mb-1">Informasi Radius</h3>
         <p className="text-sm mb-2">
-          <span className="font-medium">{filteredEvents.length}</span> event dalam radius {radius} km
+          <span className="font-medium">{filteredEvents.length}</span> event
+          dalam radius {radius} km
         </p>
         <input
           type="range"
@@ -276,32 +286,42 @@ export default function SportMap() {
 
   return (
     <div className="w-full">
-      {/* Mobile: full map with bottom sheet */}
+      {/* Mobile: full map with swipeable bottom drawer */}
       <div className="relative md:hidden h-[calc(100vh-64px)]">
         {renderMap()}
 
-        {/* Bottom sheet event list */}
-        <div className="rounded-t-3xl">
-          <div
-            ref={containerRef}
-            className="max-h-[55vh] overflow-y-auto scroll-smooth p-4 space-y-4"
-          >
-            {filteredEvents.map((e) => (
-              <div
-                key={e.id}
-                ref={(el) => {
-                  cardRefs.current[e.id] = el;
-                }}
-              >
-                <EventCard
-                  event={e}
-                  isSelected={selected === e.id}
-                  onClick={() => handleCardClick(e.id)}
-                />
+        <Drawer>
+          <DrawerTrigger>
+            <div className="absolute w-full min-h-40 -bottom-14 bg-white px-4 py-2 rounded-md ">
+              <div className="w-24 h-1.5 mt-2 mx-auto bg-gray-100 rounded-full" />
+            </div>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <div className="p-4">
+                <div
+                  ref={containerRef}
+                  className="max-h-[40vh] overflow-y-auto scroll-smooth space-y-4"
+                >
+                  {filteredEvents.map((e) => (
+                    <div
+                      key={e.id}
+                      ref={(el) => {
+                        cardRefs.current[e.id] = el;
+                      }}
+                    >
+                      <EventCard
+                        event={e}
+                        isSelected={selected === e.id}
+                        onClick={() => handleCardClick(e.id)}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </DrawerHeader>
+          </DrawerContent>
+        </Drawer>
       </div>
 
       {/* Desktop: map + sidebar list */}
