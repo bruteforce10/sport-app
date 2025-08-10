@@ -8,6 +8,7 @@ import EventCard from "./EventCard";
 import Legend from "./Legend";
 import CustomMarker from "./CustomMarker";
 import { haversine, calculateTravelTime, createGeoJSONCircle } from "@/lib/geo";
+import { useSwipeable } from "react-swipeable";
 import {
   Drawer,
   DrawerTrigger,
@@ -36,6 +37,23 @@ export default function SportMap() {
     longitude: userLoc.lng,
     latitude: userLoc.lat,
     zoom: 12,
+  });
+
+  // Swipe handlers
+  const triggerSwipeHandlers = useSwipeable({
+    onSwipedUp: () => setIsDrawerOpen(true),
+    trackTouch: true,
+    trackMouse: false,
+    preventScrollOnSwipe: true,
+    delta: 15,
+  });
+
+  const contentSwipeHandlers = useSwipeable({
+    onSwipedDown: () => setIsDrawerOpen(false),
+    trackTouch: true,
+    trackMouse: false,
+    preventScrollOnSwipe: true,
+    delta: 15,
   });
 
   useEffect(() => {
@@ -107,7 +125,8 @@ export default function SportMap() {
         const cardRect = cardElement.getBoundingClientRect();
         const cardTop = cardElement.offsetTop;
         const containerHeight = containerElement.clientHeight;
-        const targetScrollTop = cardTop - containerHeight / 2 + cardRect.height / 2;
+        const targetScrollTop =
+          cardTop - containerHeight / 2 + cardRect.height / 2;
         containerElement.scrollTo({ top: targetScrollTop, behavior: "smooth" });
       }
     }, 100);
@@ -302,19 +321,22 @@ export default function SportMap() {
         {renderMap()}
 
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          <DrawerTrigger>
-            <div className="absolute w-full min-h-40 -bottom-14 bg-white px-4 py-2 rounded-md ">
+          {/* <DrawerTrigger>
+            <div
+              {...triggerSwipeHandlers}
+              className="absolute w-full min-h-40 -bottom-14 bg-white px-4 py-2 rounded-md "
+            >
               <div className="w-24 h-1.5 mt-2 mx-auto bg-gray-100 rounded-full" />
             </div>
-          </DrawerTrigger>
-          <DrawerContent>
+          </DrawerTrigger> */}
+          <DrawerContent {...contentSwipeHandlers}>
             <DrawerHeader>
               <div className="p-4">
                 <div
                   ref={containerRef}
                   className="max-h-[40vh] overflow-y-auto scroll-smooth space-y-4"
                 >
-                {mobileOrderedEvents.map((e) => (
+                  {mobileOrderedEvents.map((e) => (
                     <div
                       key={e.id}
                       ref={(el) => {
