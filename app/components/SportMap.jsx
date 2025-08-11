@@ -122,12 +122,15 @@ export default function SportMap() {
       }
       const cardElement = cardRefs.current[event.id];
       if (cardElement) {
+        const containerRect = containerElement.getBoundingClientRect();
         const cardRect = cardElement.getBoundingClientRect();
-        const cardTop = cardElement.offsetTop;
-        const containerHeight = containerElement.clientHeight;
+        const currentScrollTop = containerElement.scrollTop;
+        const offsetWithinContainer = cardRect.top - containerRect.top;
         const targetScrollTop =
-          cardTop - containerHeight / 2 + cardRect.height / 2;
-        containerElement.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+          currentScrollTop + offsetWithinContainer - containerElement.clientHeight / 2 + cardRect.height / 2;
+        const maxScroll = containerElement.scrollHeight - containerElement.clientHeight;
+        const clamped = Math.max(0, Math.min(targetScrollTop, maxScroll));
+        containerElement.scrollTo({ top: clamped, behavior: "smooth" });
       }
     }, 100);
   };
@@ -321,14 +324,14 @@ export default function SportMap() {
         {renderMap()}
 
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          {/* <DrawerTrigger>
+          <DrawerTrigger>
             <div
               {...triggerSwipeHandlers}
               className="absolute w-full min-h-40 -bottom-14 bg-white px-4 py-2 rounded-md "
             >
               <div className="w-24 h-1.5 mt-2 mx-auto bg-gray-100 rounded-full" />
             </div>
-          </DrawerTrigger> */}
+          </DrawerTrigger>
           <DrawerContent {...contentSwipeHandlers}>
             <DrawerHeader>
               <div className="p-4">
