@@ -1,11 +1,18 @@
 "use client";
-import React, { useState } from 'react'
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
+import Link from 'next/link';
 
 const Navbar = () => {
   const router = useRouter();
-  const [keyword, setKeyword] = useState("");
+  const searchParams = useSearchParams();
+  const [keyword, setKeyword] = useState(() => searchParams.get("search") ?? "");
+
+  useEffect(() => {
+    const fromQuery = searchParams.get("search") ?? "";
+    setKeyword(fromQuery);
+  }, [searchParams]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -13,10 +20,14 @@ const Navbar = () => {
     const target = q ? `/events?search=${encodeURIComponent(q)}` : "/events";
     router.push(target);
   };
+
+  
   return (
     <div className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b">
     <div className="flex items-center gap-3 px-4 py-3">
+      <Link href="/">
       <div className="font-extrabold tracking-wider text-lg">LOGO</div>
+      </Link>
       <div className="flex-1">
         <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
           <div className="relative flex-1">

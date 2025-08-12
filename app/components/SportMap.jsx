@@ -313,7 +313,7 @@ export default function SportMap() {
       </button>
 
       {/* Legend */}
-      {/* <Legend /> */}
+      <Legend />
     </Map>
   );
 
