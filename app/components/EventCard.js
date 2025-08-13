@@ -1,5 +1,7 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function EventCard({ event, isSelected, onClick }) {
   const getCategoryColor = (category) => {
@@ -111,6 +113,13 @@ export default function EventCard({ event, isSelected, onClick }) {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Detail Button */}
+        <div className="mt-4 flex justify-end">
+          <Link href={`/events/${event.id}`} onClick={(e) => e.stopPropagation()}>
+            <Button variant="outline" size="sm">Detail Kegiatan</Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
