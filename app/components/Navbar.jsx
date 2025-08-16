@@ -74,10 +74,13 @@ const Navbar = () => {
               <Link href="/" className="hover:text-black">Home</Link>
             </li>
             <li>
+              <Link href="/events" className="hover:text-black">Events</Link>
+            </li>
+            <li>
               <Link href="#" className="hover:text-black">Buat Aktivitas</Link>
             </li>
             <li>
-              <Link href="#" className="hover:text-black">Komunitas</Link>
+              <Link href="/komunitas" className="hover:text-black">Komunitas</Link>
             </li>
             <li>
               <Link href="#" className="hover:text-black">Blog</Link>
