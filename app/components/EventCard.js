@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function EventCard({ event, isSelected, onClick }) {
+export default function EventCard({ event, isSelected, onClick, radius = 10 }) {
   const getCategoryColor = (category) => {
     const colors = {
       "Badminton": "bg-red-500",
@@ -69,7 +69,7 @@ export default function EventCard({ event, isSelected, onClick }) {
           </span>
         </div>
 
-        {/* Location */}
+        {/* Location and Distance */}
         <div className="flex items-center gap-2 mb-4">
           <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -78,6 +78,16 @@ export default function EventCard({ event, isSelected, onClick }) {
           <span className="text-gray-700 text-sm">
             {event.location}
           </span>
+          {event.distance && (
+            <span className={`text-xs px-2 py-1 rounded-full ${
+              event.distance <= radius 
+                ? 'bg-green-100 text-green-700' 
+                : 'bg-amber-100 text-amber-700'
+            }`}>
+              {event.distance.toFixed(1)} km
+              {event.distance > radius && ' (di luar radius)'}
+            </span>
+          )}
         </div>
 
         {/* Participants */}

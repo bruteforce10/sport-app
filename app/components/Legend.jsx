@@ -1,4 +1,5 @@
 import React from "react";
+import { Badge } from "lucide-react";
 import { SPORT_COLORS, SPORT_ICONS } from "@/constant/ASSET";
 
 const Legend = () => {
@@ -21,7 +22,7 @@ const Legend = () => {
                     boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
+          justifyContent: "center",
                   }}
                 >
                   <IconComponent size={12} color="white" />
@@ -31,6 +32,21 @@ const Legend = () => {
             </div>
           );
         })}
+      </div>
+      
+      {/* Distance Legend */}
+      <div className="border-t border-gray-200 mt-3 pt-3">
+        <h4 className="font-bold text-sm mb-2">Jarak</h4>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-green-500 border-2 border-white shadow-sm"></div>
+            <span className="text-xs text-gray-600">Dalam radius</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-amber-500 border-2 border-amber-700 shadow-sm"></div>
+            <span className="text-xs text-gray-600">Di luar radius (fallback)</span>
+          </div>
+        </div>
       </div>
     </div>
   );

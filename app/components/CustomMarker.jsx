@@ -3,7 +3,7 @@
 import { Badge } from "lucide-react";
 import { SPORT_COLORS, SPORT_ICONS } from "@/constant/ASSET";
 
-export default function CustomMarker({ sport, isSelected, onClick }) {
+export default function CustomMarker({ sport, isSelected, isOutsideRadius, onClick }) {
   const color = SPORT_COLORS[sport] || "#666666";
   const IconComponent = SPORT_ICONS[sport] || Badge;
 
@@ -23,14 +23,14 @@ export default function CustomMarker({ sport, isSelected, onClick }) {
           width: "40px",
           height: "40px",
           borderRadius: "50%",
-          backgroundColor: color,
-          opacity: 0.3,
+          backgroundColor: isOutsideRadius ? "#f59e0b" : color,
+          opacity: isOutsideRadius ? 0.2 : 0.3,
           position: "absolute",
           top: "-20px",
           left: "-20px",
           zIndex: 1,
         }}
-        className="animate-ping"
+        className={isOutsideRadius ? "" : "animate-ping"}
       />
       {/* Inner circle (solid) */}
       <div
@@ -38,12 +38,12 @@ export default function CustomMarker({ sport, isSelected, onClick }) {
           width: "32px",
           height: "32px",
           borderRadius: "50%",
-          backgroundColor: color,
+          backgroundColor: isOutsideRadius ? "#f59e0b" : color,
           position: "absolute",
           top: "-16px",
           left: "-16px",
           zIndex: 2,
-          border: "2px solid white",
+          border: isOutsideRadius ? "2px solid #92400e" : "2px solid white",
           boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
           display: "flex",
           alignItems: "center",

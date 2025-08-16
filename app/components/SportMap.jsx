@@ -14,10 +14,6 @@ import {
   DrawerTrigger,
   DrawerContent,
   DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
 } from "@/components/ui/drawer";
 
 const MAPBOX_TOKEN =
@@ -73,13 +69,28 @@ export default function SportMap() {
     }
   }, []);
 
-  const filteredEvents = useMemo(
-    () =>
-      events.filter(
-        (e) => haversine(userLoc.lat, userLoc.lng, e.lat, e.lng) <= radius
-      ),
-    [userLoc, radius]
-  );
+  const filteredEvents = useMemo(() => {
+    // Hitung jarak untuk semua event
+    const eventsWithDistance = events.map(event => ({
+      ...event,
+      distance: haversine(userLoc.lat, userLoc.lng, event.lat, event.lng)
+    }));
+
+    // Filter event dalam radius
+    const eventsInRadius = eventsWithDistance.filter(e => e.distance <= radius);
+    
+    // Jika ada event dalam radius, kembalikan event tersebut
+    if (eventsInRadius.length > 0) {
+      return eventsInRadius.sort((a, b) => a.distance - b.distance);
+    }
+    
+    // Fallback: jika tidak ada event dalam radius, ambil 10 event terdekat
+    const nearestEvents = eventsWithDistance
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 10);
+    
+    return nearestEvents;
+  }, [userLoc, radius]);
 
   // Reorder events for mobile so that the selected one appears first
   const mobileOrderedEvents = useMemo(() => {
@@ -200,6 +211,7 @@ export default function SportMap() {
           <CustomMarker
             sport={e.category}
             isSelected={selected === e.id}
+            isOutsideRadius={e.distance > radius}
             onClick={() => handleMarkerClick(e)}
           />
         </Marker>
@@ -220,13 +232,16 @@ export default function SportMap() {
             <h3 className="font-bold text-sm mb-2">{popupInfo.name}</h3>
             <p className="text-xs text-gray-600 mb-2">
               Jarak:{" "}
-              {haversine(
+              {popupInfo.distance ? popupInfo.distance.toFixed(1) : haversine(
                 userLoc.lat,
                 userLoc.lng,
                 popupInfo.lat,
                 popupInfo.lng
               ).toFixed(1)}{" "}
               km
+              {popupInfo.distance && popupInfo.distance > radius && (
+                <span className="text-amber-600 ml-1">(di luar radius)</span>
+              )}
             </p>
 
             {/* Transport Mode Selection */}
@@ -263,7 +278,7 @@ export default function SportMap() {
               </p>
               <p className="text-sm font-semibold text-blue-600">
                 {calculateTravelTime(
-                  haversine(
+                  popupInfo.distance || haversine(
                     userLoc.lat,
                     userLoc.lng,
                     popupInfo.lat,
@@ -280,10 +295,18 @@ export default function SportMap() {
       {/* Kotak informasi & radius control */}
       <div className="absolute top-4 left-4 bg-white p-3 rounded-md shadow-md z-10 border border-gray-200 w-64">
         <h3 className="font-bold text-sm mb-1">Informasi Radius</h3>
-        <p className="text-sm mb-2">
-          <span className="font-medium">{filteredEvents.length}</span> event
-          dalam radius {radius} km
-        </p>
+        {filteredEvents.some(e => e.distance <= radius) ? (
+          <p className="text-sm mb-2">
+            <span className="font-medium">{filteredEvents.filter(e => e.distance <= radius).length}</span> event
+            dalam radius {radius} km
+          </p>
+        ) : (
+          <p className="text-sm mb-2 text-amber-600">
+            <span className="font-medium">Tidak ada event</span> dalam radius {radius} km
+            <br />
+            <span className="text-xs">Menampilkan 10 event terdekat</span>
+          </p>
+        )}
         <input
           type="range"
           min={1}
@@ -350,6 +373,7 @@ export default function SportMap() {
                         event={e}
                         isSelected={selected === e.id}
                         onClick={() => handleCardClick(e.id)}
+                        radius={radius}
                       />
                     </div>
                   ))}
@@ -380,6 +404,7 @@ export default function SportMap() {
                 event={e}
                 isSelected={selected === e.id}
                 onClick={() => handleCardClick(e.id)}
+                radius={radius}
               />
             </div>
           ))}

@@ -523,5 +523,47 @@ export const events = [
       rating: 4.85,
       reviews: 22
     }
+  },
+  {
+    id: 26,
+    name: "Tennis Premium Serpong",
+    category: "Tennis",
+    skillLevel: "Advanced - Elite",
+    date: "Min, 24 Agu 2025",
+    time: "08:00 - 10:00",
+    location: "Tennis Court BSD City, Tangerang Selatan",
+    lat: -6.302000,
+    lng: 106.644000,
+    participants: {
+      current: 2,
+      max: 4
+    },
+    club: {
+      name: "BSD Tennis Elite Club",
+      logo: "/bsd-tennis-logo.png",
+      rating: 4.95,
+      reviews: 89
+    }
+  },
+  {
+    id: 27,
+    name: "Futsal Indoor Alam Sutera",
+    category: "Futsal",
+    skillLevel: "All Levels",
+    date: "Sen, 25 Agu 2025",
+    time: "19:00 - 21:00",
+    location: "Indoor Futsal Alam Sutera, Tangerang Selatan",
+    lat: -6.285000,
+    lng: 106.658000,
+    participants: {
+      current: 12,
+      max: 14
+    },
+    club: {
+      name: "Alam Sutera Futsal Community",
+      logo: "/alam-sutera-futsal-logo.png",
+      rating: 4.78,
+      reviews: 156
+    }
   }
 ];
