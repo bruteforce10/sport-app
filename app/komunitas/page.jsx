@@ -46,11 +46,14 @@ export default function CommunitiesPage() {
 
           {/* Create Community Button */}
           <div className="text-center">
-            <button className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold flex items-center justify-center mx-auto space-x-2 hover:bg-gray-50 transition-colors">
+            <a 
+              href="/komunitas/create"
+              className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold flex items-center justify-center mx-auto space-x-2 hover:bg-gray-50 transition-colors inline-block"
+            >
               <Shield className="w-5 h-5" />
               <span>Buat dan Kelola Komunitas</span>
               <ChevronRight className="w-5 h-5" />
-            </button>
+            </a>
           </div>
         </div>
       </div>

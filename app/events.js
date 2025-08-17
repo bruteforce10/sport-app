@@ -13,6 +13,7 @@ export const events = [
       current: 1,
       max: 3
     },
+    communityId: 11, // Gasterus Badminton Club
     club: {
       name: "Gasterus Badminton Club",
       logo: "/badminton-club-logo.png",
@@ -34,6 +35,7 @@ export const events = [
       current: 8,
       max: 10
     },
+    communityId: 12, // Jakarta Futsal Community
     club: {
       name: "Jakarta Futsal Community",
       logo: "/futsal-club-logo.png",
@@ -55,6 +57,7 @@ export const events = [
       current: 12,
       max: 20
     },
+    communityId: 13, // Street Basketball Jakarta
     club: {
       name: "Street Basketball Jakarta",
       logo: "/basketball-club-logo.png",
@@ -76,6 +79,7 @@ export const events = [
       current: 2,
       max: 4
     },
+    communityId: 14, // Tennis Club Jakarta Timur
     club: {
       name: "Tennis Club Jakarta Timur",
       logo: "/tennis-club-logo.png",
@@ -97,6 +101,7 @@ export const events = [
       current: 18,
       max: 22
     },
+    communityId: 15, // Sunday Football Club
     club: {
       name: "Sunday Football Club",
       logo: "/football-club-logo.png",
@@ -118,6 +123,7 @@ export const events = [
       current: 10,
       max: 12
     },
+    communityId: null, // Belum ada komunitas voli
     club: {
       name: "Beach Volleyball Jakarta",
       logo: "/volleyball-club-logo.png",
@@ -139,6 +145,7 @@ export const events = [
       current: 6,
       max: 8
     },
+    communityId: null, // Belum ada komunitas bulutangkis di Jakarta Pusat
     club: {
       name: "Elite Badminton Club",
       logo: "/elite-badminton-logo.png",
@@ -160,6 +167,7 @@ export const events = [
       current: 6,
       max: 10
     },
+    communityId: null, // Belum ada komunitas futsal di Jakarta Barat
     club: {
       name: "Beginner Futsal Community",
       logo: "/beginner-futsal-logo.png",
@@ -181,6 +189,7 @@ export const events = [
       current: 9,
       max: 12
     },
+    communityId: 13, // Street Basketball Jakarta
     club: {
       name: "3x3 Basketball League",
       logo: "/3x3-basketball-logo.png",
@@ -202,6 +211,7 @@ export const events = [
       current: 2,
       max: 4
     },
+    communityId: 6, // T.Rack_Club
     club: {
       name: "Advanced Tennis Club",
       logo: "/advanced-tennis-logo.png",
@@ -223,6 +233,7 @@ export const events = [
       current: 20,
       max: 22
     },
+    communityId: null, // Belum ada komunitas sepak bola di Jakarta Timur
     club: {
       name: "Night Football Community",
       logo: "/night-football-logo.png",
@@ -244,6 +255,7 @@ export const events = [
       current: 8,
       max: 12
     },
+    communityId: null, // Belum ada komunitas voli
     club: {
       name: "Indoor Volleyball Club",
       logo: "/indoor-volleyball-logo.png",
@@ -265,6 +277,7 @@ export const events = [
       current: 4,
       max: 6
     },
+    communityId: 11, // Gasterus Badminton Club
     club: {
       name: "Morning Badminton Club",
       logo: "/morning-badminton-logo.png",
@@ -286,6 +299,7 @@ export const events = [
       current: 8,
       max: 10
     },
+    communityId: 12, // Jakarta Futsal Community
     club: {
       name: "Kemang Futsal Elite",
       logo: "/kemang-futsal-logo.png",
@@ -307,6 +321,7 @@ export const events = [
       current: 15,
       max: 20
     },
+    communityId: 13, // Street Basketball Jakarta
     club: {
       name: "Pluit Street Basketball",
       logo: "/pluit-basketball-logo.png",
@@ -328,6 +343,7 @@ export const events = [
       current: 2,
       max: 4
     },
+    communityId: 9, // Enjoy Tennis
     club: {
       name: "Menteng Tennis Club",
       logo: "/menteng-tennis-logo.png",
@@ -349,6 +365,7 @@ export const events = [
       current: 16,
       max: 22
     },
+    communityId: null, // Belum ada komunitas sepak bola di Jakarta Barat
     club: {
       name: "Taman Sari Football Club",
       logo: "/taman-sari-football-logo.png",
@@ -370,6 +387,7 @@ export const events = [
       current: 6,
       max: 12
     },
+    communityId: null, // Belum ada komunitas voli
     club: {
       name: "Muara Angke Beach Volleyball",
       logo: "/muara-angke-volleyball-logo.png",
@@ -391,6 +409,7 @@ export const events = [
       current: 8,
       max: 10
     },
+    communityId: null, // Belum ada komunitas bulutangkis di Jakarta Timur
     club: {
       name: "Jatinegara Badminton Club",
       logo: "/jatinegara-badminton-logo.png",
@@ -412,6 +431,7 @@ export const events = [
       current: 8,
       max: 10
     },
+    communityId: null, // Belum ada komunitas futsal di Jakarta Pusat
     club: {
       name: "Thamrin Futsal Elite",
       logo: "/thamrin-futsal-logo.png",
@@ -433,6 +453,7 @@ export const events = [
       current: 6,
       max: 12
     },
+    communityId: 13, // Street Basketball Jakarta
     club: {
       name: "Grogol 3x3 Basketball",
       logo: "/grogol-3x3-logo.png",
@@ -454,6 +475,7 @@ export const events = [
       current: 2,
       max: 4
     },
+    communityId: 3, // Rocket Tennis
     club: {
       name: "Kebayoran Tennis Club",
       logo: "/kebayoran-tennis-logo.png",
@@ -475,6 +497,7 @@ export const events = [
       current: 18,
       max: 22
     },
+    communityId: null, // Belum ada komunitas sepak bola di Jakarta Timur
     club: {
       name: "Rawamangun Football Community",
       logo: "/rawamangun-football-logo.png",
@@ -496,6 +519,7 @@ export const events = [
       current: 10,
       max: 12
     },
+    communityId: null, // Belum ada komunitas voli
     club: {
       name: "Kelapa Gading Volleyball Elite",
       logo: "/kelapa-gading-volleyball-logo.png",
@@ -517,6 +541,7 @@ export const events = [
       current: 6,
       max: 8
     },
+    communityId: null, // Belum ada komunitas bulutangkis di Jakarta Pusat
     club: {
       name: "Menteng Badminton Club",
       logo: "/menteng-badminton-logo.png",
@@ -538,6 +563,7 @@ export const events = [
       current: 2,
       max: 4
     },
+    communityId: 7, // HOBBY TENIS
     club: {
       name: "BSD Tennis Elite Club",
       logo: "/bsd-tennis-logo.png",
@@ -559,6 +585,7 @@ export const events = [
       current: 12,
       max: 14
     },
+    communityId: null, // Belum ada komunitas futsal di Tangerang Selatan
     club: {
       name: "Alam Sutera Futsal Community",
       logo: "/alam-sutera-futsal-logo.png",
@@ -567,3 +594,23 @@ export const events = [
     }
   }
 ];
+
+// Fungsi helper untuk mendapatkan komunitas berdasarkan event
+export const getCommunityByEvent = (eventId) => {
+  const event = events.find(e => e.id === eventId);
+  if (!event || !event.communityId) return null;
+  
+  // Import communities dari file communities.js
+  const { communities } = require('./communities');
+  return communities.find(c => c.id === event.communityId);
+};
+
+// Fungsi helper untuk mendapatkan events berdasarkan komunitas
+export const getEventsByCommunity = (communityId) => {
+  return events.filter(e => e.communityId === communityId);
+};
+
+// Fungsi helper untuk mendapatkan events yang tidak memiliki komunitas
+export const getEventsWithoutCommunity = () => {
+  return events.filter(e => !e.communityId);
+};
