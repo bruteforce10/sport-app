@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
 import Link from 'next/link';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 const Navbar = () => {
   const router = useRouter();
@@ -89,13 +90,14 @@ const Navbar = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="#" className="text-sm font-medium text-gray-700 hover:underline">Login</Link>
-          <Link
-            href="#"
-            className="inline-flex items-center justify-center rounded-full bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
-          >
-            Register
-          </Link>
+          <SignedOut>
+            <SignInButton>
+              <button className="text-sm font-medium text-gray-700 hover:underline">Login</button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
     </div>

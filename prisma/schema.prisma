@@ -12,3 +12,31 @@ model User {
   email String
   name  String
 }
+
+model Community {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  category    String       // Cabang olahraga
+  name        String       // Nama komunitas
+  city        String       // Kota
+  description String       // Deskripsi komunitas
+  socialMedia SocialMedia?
+  privacy     Privacy      @default(open)
+  members     Int          @default(1) // Jumlah anggota (initial 1)
+  rating      Float        @default(0) // Rating komunitas (initial 0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model SocialMedia {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  communityId String @unique @db.ObjectId
+  instagram   String?
+  facebook    String?
+  tiktok      String?
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+}
+
+enum Privacy {
+  open
+  closed
+}

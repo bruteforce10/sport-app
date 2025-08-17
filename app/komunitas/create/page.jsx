@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { sportCategories } from "../../communities";
+import CityAutocomplete from "../../components/CityAutocomplete";
 
 const formSchema = z.object({
   category: z.string({
@@ -68,12 +69,30 @@ export default function CreateCommunityPage() {
     },
   });
 
-  function onSubmit(values) {
-    // Handle form submission here
-    console.log("Form values:", values);
-    // You can add API call here to create the community
-    alert("Komunitas berhasil dibuat!");
-    router.push("/komunitas");
+  async function onSubmit(values) {
+    try {
+      const response = await fetch('/api/communities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create community');
+      }
+
+      const result = await response.json();
+      console.log('Community created:', result);
+      
+      alert("Komunitas berhasil dibuat!");
+      router.push("/komunitas");
+    } catch (error) {
+      console.error('Error creating community:', error);
+      alert(`Gagal membuat komunitas: ${error.message}`);
+    }
   }
 
   return (
@@ -157,10 +176,11 @@ export default function CreateCommunityPage() {
                   <FormItem>
                     <FormLabel className="text-base font-semibold">Kota</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Masukkan nama kota" 
+                      <CityAutocomplete
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Masukkan nama kota"
                         className="h-12"
-                        {...field} 
                       />
                     </FormControl>
                     <FormMessage />
