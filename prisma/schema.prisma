@@ -8,9 +8,15 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  email String
-  name  String
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId  String @unique // Clerk user ID
+  email    String @unique
+  name     String?
+  avatar   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  communities Community[]
+  ratings     Rating[]
 }
 
 model Community {
@@ -25,18 +31,37 @@ model Community {
   rating      Float        @default(0) // Rating komunitas (initial 0)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  userId      String       @db.ObjectId
+  user        User         @relation(fields: [userId], references: [id])
+  ratings     Rating[]
 }
 
+
+
 model SocialMedia {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  communityId String @unique @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  communityId String?    @unique @db.ObjectId
   instagram   String?
   facebook    String?
   tiktok      String?
-  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  community   Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
 }
 
 enum Privacy {
   open
   closed
+}
+
+model Rating {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  value       Int
+  createdAt   DateTime   @default(now())
+
+  userId      String     @db.ObjectId
+  user        User       @relation(fields: [userId], references: [id])
+
+  communityId String     @db.ObjectId
+  community   Community  @relation(fields: [communityId], references: [id])
+
+  @@unique([userId, communityId])
 }

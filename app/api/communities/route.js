@@ -1,9 +1,26 @@
 import { NextResponse } from 'next/server';
 import CommunityService from '@/lib/communityService';
+import { currentUser } from '@clerk/nextjs/server';
+import { getUserByClerkId, syncUserFromClerk } from '@/lib/userService';
 
 // POST /api/communities - Create a new community
 export async function POST(request) {
   try {
+    // Ensure user is authenticated via Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Find or create corresponding app user
+    let appUser = await getUserByClerkId(clerkUser.id);
+    if (!appUser) {
+      appUser = await syncUserFromClerk(clerkUser);
+    }
+
     const body = await request.json();
     
     // Validate required fields
@@ -27,7 +44,9 @@ export async function POST(request) {
         facebook: socialMedia?.facebook || '',
         tiktok: socialMedia?.tiktok || ''
       },
-      privacy
+      privacy,
+      rating: 0,
+      userId: appUser.id
     };
 
     const community = await CommunityService.createCommunity(communityData);

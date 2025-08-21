@@ -5,6 +5,18 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting database seed...');
 
+  // Ensure a sample user exists (as community creator)
+  const seedUser = await prisma.user.upsert({
+    where: { clerkId: 'seed-user-1' },
+    update: {},
+    create: {
+      clerkId: 'seed-user-1',
+      email: 'seed.user@example.com',
+      name: 'Seed User',
+      avatar: ''
+    }
+  });
+
   // Create sample communities
   const communities = [
     {
@@ -75,6 +87,7 @@ async function main() {
     const community = await prisma.community.create({
       data: {
         ...communityFields,
+        userId: seedUser.id,
         socialMedia: {
           create: socialMedia
         }

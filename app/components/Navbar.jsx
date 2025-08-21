@@ -1,14 +1,16 @@
 "use client";
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, User, LogOut } from "lucide-react";
 import Link from 'next/link';
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignInButton, SignedIn, SignedOut, UserButton, useUser as useClerkUser } from '@clerk/nextjs';
+import { useUser } from '@/lib/hooks/useUser';
 
 const Navbar = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [keyword, setKeyword] = useState(() => searchParams.get("search") ?? "");
+  const { user, loading } = useUser();
 
   useEffect(() => {
     const fromQuery = searchParams.get("search") ?? "";
@@ -22,7 +24,6 @@ const Navbar = () => {
     router.push(target);
   };
 
-  
   return (
     <div className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b">
       {/* Mobile: tetap sesuai desain saat ini */}
@@ -83,6 +84,7 @@ const Navbar = () => {
             <li>
               <Link href="/komunitas" className="hover:text-black">Komunitas</Link>
             </li>
+
             <li>
               <Link href="#" className="hover:text-black">Blog</Link>
             </li>
@@ -96,7 +98,18 @@ const Navbar = () => {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <UserButton />
+            {loading ? (
+              <div className="animate-pulse bg-gray-200 rounded-full w-8 h-8"></div>
+            ) : user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-700">
+                  Hi, {user.name || 'User'}!
+                </span>
+                <UserButton />
+              </div>
+            ) : (
+              <UserButton />
+            )}
           </SignedIn>
         </div>
       </div>
