@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ArrowLeft, Instagram, Facebook, Music } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -48,10 +49,13 @@ const formSchema = z.object({
   privacy: z.enum(["open", "closed"], {
     required_error: "Pilih privasi komunitas",
   }),
+  activityTags: z.array(z.string()).default([])
 });
 
 export default function CreateCommunityPage() {
   const router = useRouter();
+  const [tagInput, setTagInput] = useState("");
+  const SUGGESTED_ACTIVITY_TAGS = ["Latihan Rutin", "Turnamen", "Pelatihan", "Gathering"];
   
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -66,6 +70,7 @@ export default function CreateCommunityPage() {
         tiktok: "",
       },
       privacy: "open",
+      activityTags: []
     },
   });
 
@@ -316,6 +321,91 @@ export default function CreateCommunityPage() {
                         </div>
                       </RadioGroup>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Activity Tags */}
+              <FormField
+                control={form.control}
+                name="activityTags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-semibold">Tags</FormLabel>
+                    <FormControl>
+                      <div>
+                        <input
+                          value={tagInput}
+                          onChange={(e) => setTagInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const value = tagInput.trim();
+                              if (!value) return;
+                              if (!field.value.includes(value)) {
+                                field.onChange([...field.value, value]);
+                              }
+                              setTagInput("");
+                            }
+                          }}
+                          placeholder="Tambahkan tag aktivitas"
+                          className="w-full h-12 rounded-md border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        {tagInput && (
+                          <button
+                            type="button"
+                            className="mt-2 w-full text-left px-3 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
+                            onClick={() => {
+                              const value = tagInput.trim();
+                              if (!value) return;
+                              if (!field.value.includes(value)) {
+                                field.onChange([...field.value, value]);
+                              }
+                              setTagInput("");
+                            }}
+                          >
+                            + Add {tagInput}
+                          </button>
+                        )}
+                      </div>
+                    </FormControl>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {field.value.map((tag) => (
+                        <span key={tag} className="inline-flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 rounded-full border">
+                          {tag}
+                          <button
+                            type="button"
+                            className="text-gray-500 hover:text-gray-700"
+                            onClick={() => {
+                              field.onChange(field.value.filter((t) => t !== tag));
+                            }}
+                            aria-label={`remove ${tag}`}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-3">
+                      <div className="text-sm text-gray-600 mb-2">Saran:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {SUGGESTED_ACTIVITY_TAGS.map((t) => (
+                          <button
+                            type="button"
+                            key={t}
+                            className="px-3 py-1 text-sm border rounded-full hover:bg-gray-50"
+                            onClick={() => {
+                              if (!field.value.includes(t)) {
+                                field.onChange([...field.value, t]);
+                              }
+                            }}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

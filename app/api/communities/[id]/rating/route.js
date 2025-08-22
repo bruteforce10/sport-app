@@ -26,6 +26,7 @@ export async function POST(_request, { params }) {
     }
 
     const result = await CommunityService.upsertRating({
+      comment: body?.comment,
       communityId,
       userId: appUser.id,
       value
@@ -70,6 +71,7 @@ export async function PUT(request, { params }) {
     
    // upsert rating
    const result = await CommunityService.upsertRating({
+    comment: body?.comment,
     communityId,
     userId: appUser.id,
     value

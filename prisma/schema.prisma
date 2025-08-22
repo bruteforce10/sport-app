@@ -8,15 +8,18 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  clerkId  String @unique // Clerk user ID
-  email    String @unique
-  name     String?
-  avatar   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  communities Community[]
+  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId   String            @unique
+  email     String            @unique
+  name      String?
+  avatar    String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  communities Community[]       @relation("CommunityOwner")
+  memberships CommunityMember[]
   ratings     Rating[]
+  messages    Message[]
 }
 
 model Community {
@@ -25,15 +28,22 @@ model Community {
   name        String       // Nama komunitas
   city        String       // Kota
   description String       // Deskripsi komunitas
-  socialMedia SocialMedia?
   privacy     Privacy      @default(open)
   members     Int          @default(1) // Jumlah anggota (initial 1)
   rating      Float        @default(0) // Rating komunitas (initial 0)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  userId      String       @db.ObjectId
-  user        User         @relation(fields: [userId], references: [id])
+  activityTags String[]    @default([])
+  
+  // owner
+  userId String @db.ObjectId
+  user   User   @relation("CommunityOwner", fields: [userId], references: [id])
+
+  // relasi tambahan
   ratings     Rating[]
+  socialMedia SocialMedia?
+  memberships CommunityMember[]
+  messages    Message[]
 }
 
 
@@ -53,15 +63,51 @@ enum Privacy {
 }
 
 model Rating {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  value     Int      // nilai rating (misalnya 1–5)
+  comment   String?  // komentar user (opsional)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  communityId String @db.ObjectId
+  community   Community @relation(fields: [communityId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, communityId]) // user hanya bisa memberi 1 rating untuk 1 komunitas
+}
+
+model CommunityMember {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  value       Int
-  createdAt   DateTime   @default(now())
-
   userId      String     @db.ObjectId
-  user        User       @relation(fields: [userId], references: [id])
-
   communityId String     @db.ObjectId
+
+  user        User       @relation(fields: [userId], references: [id])
   community   Community  @relation(fields: [communityId], references: [id])
+
+  role        MemberRole @default(member)
+  joinedAt    DateTime   @default(now())
 
   @@unique([userId, communityId])
 }
+
+enum MemberRole {
+  owner
+  admin
+  member
+}
+
+model Message {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+  createdAt   DateTime   @default(now())
+
+  // siapa yang kirim
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  // ke komunitas mana
+  communityId String    @db.ObjectId
+  community   Community @relation(fields: [communityId], references: [id])
+}
+

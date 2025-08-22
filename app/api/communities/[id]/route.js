@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import CommunityService from '@/lib/communityService';
+import { currentUser } from '@clerk/nextjs/server';
+import { getUserByClerkId, syncUserFromClerk } from '@/lib/userService';
 
 // GET /api/communities/[id] - Get community by ID
 export async function GET(request, { params }) {
@@ -30,6 +32,19 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
+    // Ensure user is authenticated via Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    // Find or create corresponding app user
+    let appUser = await getUserByClerkId(clerkUser.id);
+    if (!appUser) {
+      appUser = await syncUserFromClerk(clerkUser);
+    }
     const body = await request.json();
     
     // Validate required fields
@@ -56,6 +71,12 @@ export async function PUT(request, { params }) {
       privacy
     };
 
+    // Authorization: only owner/admin can update
+    const allowed = await CommunityService.isAdminOrOwner({ communityId: id, userId: appUser.id });
+    if (!allowed) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const community = await CommunityService.updateCommunity(id, updateData);
     
     return NextResponse.json(
@@ -78,7 +99,26 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { id } = params;
-    
+    // Ensure user is authenticated via Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    // Find or create corresponding app user
+    let appUser = await getUserByClerkId(clerkUser.id);
+    if (!appUser) {
+      appUser = await syncUserFromClerk(clerkUser);
+    }
+
+    // Authorization: only owner/admin can delete
+    const allowed = await CommunityService.isAdminOrOwner({ communityId: id, userId: appUser.id });
+    if (!allowed) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     await CommunityService.deleteCommunity(id);
     
     return NextResponse.json(

@@ -15,7 +15,7 @@ export default function CommunitiesPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const popularCommunities = communities.slice(0, 3);
+
   const recommendedCommunities = filteredCommunities.slice(0, 10);
 
   const displayedCategories = showAllCategories ? sportCategories : sportCategories.slice(0, 6);
@@ -82,36 +82,6 @@ export default function CommunitiesPage() {
           )}
         </section>
 
-        {/* Popular Communities Section */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Komunitas populer</h2>
-          <div className="flex space-x-4 overflow-x-auto pb-4">
-            {popularCommunities.map((community) => (
-              <div key={community.id} className="min-w-[280px] bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{community.name}</h3>
-                    <p className="text-sm text-gray-600">{community.category} • {community.members.toLocaleString()} Anggota</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-sm text-gray-500 mb-3">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {community.location.split(',')[0]}
-                </div>
-                <div className="flex space-x-1">
-                  {['CS', 'PP', 'RM', 'AH', 'DW', 'SW'].slice(0, 6).map((initial, index) => (
-                    <div key={index} className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-700">
-                      {initial}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* Recommended Communities Section */}
         <section>
