@@ -1,24 +1,89 @@
 "use client";
-import { useState } from "react";
-import { communities, sportCategories } from "../communities";
+import { useState, useEffect } from "react";
+import { sportCategories } from "../communities";
 import { Search, Shield, ChevronDown, ChevronRight, Star, MapPin, Users, Calendar, Phone, Mail, Globe, Instagram, Facebook } from "lucide-react";
 
 export default function CommunitiesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [communities, setCommunities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch communities from API
+  useEffect(() => {
+    fetchCommunities();
+  }, []);
+
+  const fetchCommunities = async (filters = {}) => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      
+      if (filters.search) params.append('search', filters.search);
+      if (filters.category && filters.category !== 'All') params.append('category', filters.category);
+      if (filters.city) params.append('city', filters.city);
+
+      const response = await fetch(`/api/communities?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch communities');
+      }
+
+      const data = await response.json();
+      setCommunities(data.communities || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching communities:', err);
+      setError('Gagal memuat data komunitas');
+      setCommunities([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter communities based on search and category
   const filteredCommunities = communities.filter(community => {
     const matchesSearch = community.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         community.location.toLowerCase().includes(searchQuery.toLowerCase());
+                         (community.city && community.city.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === "All" || community.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-
   const recommendedCommunities = filteredCommunities.slice(0, 10);
-
   const displayedCategories = showAllCategories ? sportCategories : sportCategories.slice(0, 6);
+
+  // Handle search
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    fetchCommunities({ search: query, category: selectedCategory });
+  };
+
+  // Handle category filter
+  const handleCategoryFilter = (category) => {
+    setSelectedCategory(category);
+    fetchCommunities({ search: searchQuery, category });
+  };
+
+  // Get category icon
+  const getCategoryIcon = (category) => {
+    const categoryMap = {
+      'Padel': '🏓',
+      'Tennis': '🎾',
+      'Badminton': '🏸',
+      'Futsal': '⚽',
+      'Football': '⚽',
+      'Basketball': '🏀',
+      'Billiard': '🎱',
+      'Swimming': '🏊',
+      'Gym': '💪',
+      'Running': '🏃',
+      'Cycling': '🚴',
+      'Volleyball': '🏐'
+    };
+    return categoryMap[category] || '🏆';
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -27,7 +92,7 @@ export default function CommunitiesPage() {
         <div className="max-w-6xl mx-auto px-4">
           <h1 className="text-4xl font-bold text-center mb-2">Komunitas</h1>
           <p className="text-xl text-center mb-8 opacity-90">
-            Yuk gabung di lebih dari 22.500 komunitas di AYO!
+            Yuk gabung di lebih dari {loading ? '...' : communities.length.toLocaleString()} komunitas di AYO!
           </p>
           
           {/* Search Bar */}
@@ -36,9 +101,9 @@ export default function CommunitiesPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Cari Komunitas Billiard"
+                placeholder="Cari komunitas..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
               />
             </div>
@@ -82,7 +147,6 @@ export default function CommunitiesPage() {
           )}
         </section>
 
-
         {/* Recommended Communities Section */}
         <section>
           <div className="flex items-center justify-between mb-6">
@@ -95,7 +159,7 @@ export default function CommunitiesPage() {
             {['All', 'Padel', 'Tennis', 'Badminton', 'Futsal', 'Football', 'Basketball'].map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => handleCategoryFilter(category)}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                   selectedCategory === category
                     ? 'bg-purple-600 text-white'
@@ -108,67 +172,81 @@ export default function CommunitiesPage() {
           </div>
 
           {/* Communities Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recommendedCommunities.map((community) => (
-              <div key={community.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-lg mb-1">{community.name}</h3>
-                    <div className="flex items-center text-sm text-gray-500 mb-1">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      {community.location}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-gray-500">Memuat komunitas...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 mb-4">{error}</p>
+              <button 
+                onClick={() => fetchCommunities()}
+                className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Coba Lagi
+              </button>
+            </div>
+          ) : recommendedCommunities.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">Tidak ada komunitas yang ditemukan</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recommendedCommunities.map((community) => (
+                <div key={community.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
                     </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Users className="w-4 h-4 mr-1" />
-                      {community.members.toLocaleString()} Anggota
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 text-lg mb-1">{community.name}</h3>
+                      <div className="flex items-center text-sm text-gray-500 mb-1">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        {community.city || 'Lokasi tidak tersedia'}
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Users className="w-4 h-4 mr-1" />
+                        {community.members ? community.members.toLocaleString() : '0'} Anggota
+                      </div>
+                    </div>
+                    <div className="text-2xl">
+                      {getCategoryIcon(community.category)}
                     </div>
                   </div>
-                  <div className="text-2xl">
-                    {community.category === 'Padel' && '🏓'}
-                    {community.category === 'Tennis' && '🎾'}
-                    {community.category === 'Badminton' && '🏸'}
-                    {community.category === 'Futsal' && '⚽'}
-                    {community.category === 'Football' && '⚽'}
-                    {community.category === 'Basketball' && '🏀'}
+
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {community.description || 'Deskripsi tidak tersedia'}
+                  </p>
+
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span className="text-sm font-medium text-gray-900">{community.rating || 0}</span>
+                      <span className="text-sm text-gray-500">({community.reviews || 0})</span>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {community.createdAt ? `Dibuat ${new Date(community.createdAt).getFullYear()}` : 'Baru dibuat'}
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{community.description}</p>
+                  {community.activityTags && community.activityTags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {community.activityTags.slice(0, 3).map((activity, index) => (
+                        <span key={index} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                          {activity}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium text-gray-900">{community.rating}</span>
-                    <span className="text-sm text-gray-500">({community.reviews})</span>
-                  </div>
-                  <div className="text-sm text-gray-500">Didirikan {community.founded}</div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {community.activities.slice(0, 3).map((activity, index) => (
-                    <span key={index} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
-                      {activity}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex space-x-2">
-                  <button className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
+                  <button className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
                     Gabung
                   </button>
-                  <button className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                    <Phone className="w-4 h-4" />
-                  </button>
-                  <button className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                    <Mail className="w-4 h-4" />
-                  </button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </main>

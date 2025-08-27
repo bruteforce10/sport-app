@@ -343,16 +343,20 @@ export default function CreateCommunityPage() {
                               e.preventDefault();
                               const value = tagInput.trim();
                               if (!value) return;
+                              if (field.value.length >= 5) {
+                                alert("Maksimal hanya bisa menambahkan 5 tag");
+                                return;
+                              }
                               if (!field.value.includes(value)) {
                                 field.onChange([...field.value, value]);
                               }
                               setTagInput("");
                             }
                           }}
-                          placeholder="Tambahkan tag aktivitas"
+                          placeholder="Tambahkan tag aktivitas (maksimal 5)"
                           className="w-full h-12 rounded-md border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
-                        {tagInput && (
+                        {tagInput && field.value.length < 5 && (
                           <button
                             type="button"
                             className="mt-2 w-full text-left px-3 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
@@ -396,6 +400,10 @@ export default function CreateCommunityPage() {
                             key={t}
                             className="px-3 py-1 text-sm border rounded-full hover:bg-gray-50"
                             onClick={() => {
+                              if (field.value.length >= 5) {
+                                alert("Maksimal hanya bisa menambahkan 5 tag");
+                                return;
+                              }
                               if (!field.value.includes(t)) {
                                 field.onChange([...field.value, t]);
                               }
@@ -406,6 +414,9 @@ export default function CreateCommunityPage() {
                         ))}
                       </div>
                     </div>
+                    <FormDescription className="text-sm text-gray-500">
+                      Maksimal 5 tag
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

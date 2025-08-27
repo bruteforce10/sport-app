@@ -75,7 +75,6 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const city = searchParams.get('city');
-    const privacy = searchParams.get('privacy');
     const search = searchParams.get('search');
     
     let communities;
@@ -86,8 +85,6 @@ export async function GET(request) {
       communities = await CommunityService.getCommunitiesByCategory(category);
     } else if (city) {
       communities = await CommunityService.getCommunitiesByCity(city);
-    } else if (privacy) {
-      communities = await CommunityService.getCommunitiesByPrivacy(privacy);
     } else {
       communities = await CommunityService.getAllCommunities();
     }
