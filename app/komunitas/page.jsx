@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { sportCategories } from "../communities";
 import { Search, Shield, ChevronDown, ChevronRight, Star, MapPin, Users, Calendar, Phone, Mail, Globe, Instagram, Facebook } from "lucide-react";
 
 export default function CommunitiesPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -200,7 +202,12 @@ export default function CommunitiesPage() {
                       {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-lg mb-1">{community.name}</h3>
+                      <h3 
+                        className="font-semibold text-gray-900 text-lg mb-1 cursor-pointer hover:text-purple-600 transition-colors"
+                        onClick={() => router.push(`/komunitas/${community.id}`)}
+                      >
+                        {community.name}
+                      </h3>
                       <div className="flex items-center text-sm text-gray-500 mb-1">
                         <MapPin className="w-4 h-4 mr-1" />
                         {community.city || 'Lokasi tidak tersedia'}
