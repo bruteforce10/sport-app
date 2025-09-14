@@ -29,7 +29,6 @@ model Community {
   city        String       // Kota
   description String       // Deskripsi komunitas
   privacy     Privacy      @default(open)
-  members     Int          @default(1) // Jumlah anggota (initial 1)
   rating      Float        @default(0) // Rating komunitas (initial 0)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

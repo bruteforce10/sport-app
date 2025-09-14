@@ -4,9 +4,10 @@ import { SPORT_COLORS, SPORT_ICONS } from "@/constant/ASSET";
 
 const Legend = () => {
   return (
-    <div className="absolute bottom-4 left-4 bg-white p-4 rounded-md shadow-md z-10 border border-gray-200 max-w-xs">
+    <div className="flex items-end gap-4 absolute bottom-4 left-0 z-10 p-2">
+    <div className=" bg-white/60 p-4 rounded-md shadow-md  border border-gray-200">
       <h3 className="font-bold text-sm mb-3">Kategori Olahraga</h3>
-      <div className="space-y-2">
+      <div className="flex items-center gap-4">
         {Object.entries(SPORT_COLORS).map(([sport, color]) => {
           const IconComponent = SPORT_ICONS[sport] || Badge;
           return (
@@ -24,7 +25,7 @@ const Legend = () => {
                     alignItems: "center",
           justifyContent: "center",
                   }}
-                >
+                  >
                   <IconComponent size={12} color="white" />
                 </div>
               </div>
@@ -33,17 +34,17 @@ const Legend = () => {
           );
         })}
       </div>
-      
-      {/* Distance Legend */}
-      <div className="border-t border-gray-200 mt-3 pt-3">
+    </div>
+     {/* Distance Legend */}
+     <div className="bg-white/60 p-4 rounded-md shadow-md z-10 border border-gray-200">
         <h4 className="font-bold text-sm mb-2">Jarak</h4>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-green-500 border-2 border-white shadow-sm"></div>
+            <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow-sm"></div>
             <span className="text-xs text-gray-600">Dalam radius</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-amber-500 border-2 border-amber-700 shadow-sm"></div>
+            <div className="w-4 h-4 rounded-full bg-amber-500 border-2 border-amber-700 shadow-sm"></div>
             <span className="text-xs text-gray-600">Di luar radius (fallback)</span>
           </div>
         </div>

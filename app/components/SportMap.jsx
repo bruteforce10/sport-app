@@ -293,7 +293,7 @@ export default function SportMap() {
       )}
 
       {/* Kotak informasi & radius control */}
-      <div className="absolute top-4 left-4 bg-white p-3 rounded-md shadow-md z-10 border border-gray-200 w-64">
+      <div className="absolute top-4 left-4 bg-white/60 p-3 rounded-md shadow-md z-10 border border-gray-200 w-64">
         <h3 className="font-bold text-sm mb-1">Informasi Radius</h3>
         {filteredEvents.some(e => e.distance <= radius) ? (
           <p className="text-sm mb-2">
