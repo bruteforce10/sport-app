@@ -1,9 +1,9 @@
 "use client";
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import EventCard from "../components/EventCard";
+import EventCard from "../../components/molecules/EventCard";
 import { events } from "../events";
-import SearchSection from "../components/SearchSection";
+import SearchSection from "../../components/organisms/SearchSection";
 
 function filterEvents({ search, city, category }) {
   const keyword = (search || "").toString().trim().toLowerCase();

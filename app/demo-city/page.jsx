@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import CityAutocomplete from "../components/CityAutocomplete";
+import CityAutocomplete from "../../components/organisms/CityAutocomplete";
 
 export default function CityAutocompleteDemo() {
   const [selectedCity, setSelectedCity] = useState("");

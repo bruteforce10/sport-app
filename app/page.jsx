@@ -1,6 +1,7 @@
 "use client";
-import SportMap from "./components/SportMap";
-import SearchSection from "./components/SearchSection";
+import SportMap from "../components/organisms/SportMap";
+import SearchSection from "../components/organisms/SearchSection";
+
 
 export default function Home() {
   return (

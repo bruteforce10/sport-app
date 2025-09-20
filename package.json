@@ -40,6 +40,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "prisma": "^6.14.0",
     "tailwindcss": "^4",

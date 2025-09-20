@@ -1,4 +1,4 @@
-import AvatarMemberSection from '@/components/AvatarMemberSection';
+import AvatarMemberSection from '@/components/molecules/AvatarMemberSection';
 import { MapPin, Star, Share2 } from 'lucide-react';
 
 export default function CommunityHeader({ community }) {

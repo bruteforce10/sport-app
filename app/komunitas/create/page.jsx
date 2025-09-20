@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { sportCategories } from "../../communities";
-import CityAutocomplete from "../../components/CityAutocomplete";
+import CityAutocomplete from "../../../components/organisms/CityAutocomplete";
 
 const formSchema = z.object({
   category: z.string({

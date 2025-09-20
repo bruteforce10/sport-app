@@ -3,10 +3,10 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Map, { Marker, Popup, Source, Layer } from "react-map-gl/mapbox";
 import { LocateFixed } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { events } from "../events";
-import EventCard from "./EventCard";
-import Legend from "./Legend";
-import CustomMarker from "./CustomMarker";
+import { events } from "../../app/events";
+import EventCard from "../molecules/EventCard";
+import Legend from "../atoms/Legend";
+import CustomMarker from "../atoms/CustomMarker";
 import { haversine, calculateTravelTime, createGeoJSONCircle } from "@/lib/geo";
 import { useSwipeable } from "react-swipeable";
 import {
