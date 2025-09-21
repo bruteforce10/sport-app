@@ -24,7 +24,7 @@ export async function POST(request) {
     const body = await request.json();
     
     // Validate required fields
-    const { category, name, city, description, socialMedia, privacy, activityTags } = body;
+    const { category, name, city, description, avatar, socialMedia, privacy, activityTags } = body;
     
     if (!category || !name || !city || !description || !privacy) {
       return NextResponse.json(
@@ -39,6 +39,7 @@ export async function POST(request) {
       name,
       city,
       description,
+      avatar: avatar || null,
       activityTags: Array.isArray(activityTags) ? activityTags : [],
       socialMedia: {
         instagram: socialMedia?.instagram || '',

@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { sportCategories } from "../../communities";
 import CityAutocomplete from "../../../components/organisms/CityAutocomplete";
+import LocalImageUpload from "../../../components/ui/local-image-upload";
 
 const formSchema = z.object({
   category: z.string({
@@ -41,6 +42,7 @@ const formSchema = z.object({
   }).max(500, {
     message: "Deskripsi komunitas maksimal 500 karakter",
   }),
+  avatar: z.any().optional(),
   socialMedia: z.object({
     instagram: z.string().optional(),
     facebook: z.string().optional(),
@@ -55,6 +57,7 @@ const formSchema = z.object({
 export default function CreateCommunityPage() {
   const router = useRouter();
   const [tagInput, setTagInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const SUGGESTED_ACTIVITY_TAGS = ["Latihan Rutin", "Turnamen", "Pelatihan", "Gathering"];
   
   const form = useForm({
@@ -64,6 +67,7 @@ export default function CreateCommunityPage() {
       name: "",
       city: "",
       description: "",
+      avatar: null,
       socialMedia: {
         instagram: "",
         facebook: "",
@@ -75,13 +79,51 @@ export default function CreateCommunityPage() {
   });
 
   async function onSubmit(values) {
+    setIsSubmitting(true);
     try {
+      let avatarUrl = '';
+      
+      // Upload avatar to Cloudinary if file is selected
+      if (values.avatar && values.avatar instanceof File) {
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+        if (!cloudName) {
+          throw new Error('Cloudinary cloud name not configured');
+        }
+
+        const formData = new FormData();
+        formData.append('file', values.avatar);
+        formData.append('upload_preset', 'active');
+        formData.append('folder', 'community-avatars');
+
+        const uploadResponse = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json().catch(() => ({}));
+          throw new Error(`Avatar upload failed: ${uploadResponse.status} - ${errorData.error?.message || 'Unknown error'}`);
+        }
+
+        const uploadResult = await uploadResponse.json();
+        avatarUrl = uploadResult.secure_url;
+      }
+
+      // Prepare data for API call
+      const submitData = {
+        ...values,
+        avatar: avatarUrl
+      };
+
       const response = await fetch('/api/communities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(submitData),
       });
 
       if (!response.ok) {
@@ -97,6 +139,8 @@ export default function CreateCommunityPage() {
     } catch (error) {
       console.error('Error creating community:', error);
       alert(`Gagal membuat komunitas: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -168,6 +212,28 @@ export default function CreateCommunityPage() {
                         {...field} 
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Avatar Upload */}
+              <FormField
+                control={form.control}
+                name="avatar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-semibold">Avatar Komunitas</FormLabel>
+                    <FormControl>
+                      <LocalImageUpload
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormDescription className="text-sm text-gray-500">
+                      Upload foto untuk avatar komunitas (opsional)
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -426,9 +492,10 @@ export default function CreateCommunityPage() {
               <div className="pt-6">
                 <Button 
                   type="submit" 
-                  className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold text-lg"
+                  disabled={isSubmitting}
+                  className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold text-lg disabled:opacity-50"
                 >
-                  Simpan Komunitas
+                  {isSubmitting ? 'Menyimpan...' : 'Simpan Komunitas'}
                 </Button>
               </div>
             </form>

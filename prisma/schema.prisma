@@ -28,6 +28,7 @@ model Community {
   name        String       // Nama komunitas
   city        String       // Kota
   description String       // Deskripsi komunitas
+  avatar      String?      // Avatar komunitas (Cloudinary URL)
   privacy     Privacy      @default(open)
   rating      Float        @default(0) // Rating komunitas (initial 0)
   createdAt   DateTime     @default(now())
