@@ -108,7 +108,7 @@ export default function CityAutocomplete({ value, onChange, placeholder, classNa
     
     return parts.map((part, index) => 
       regex.test(part) ? (
-        <span key={index} className="font-semibold text-red-600 bg-red-50 px-1 rounded">
+        <span key={index} className="font-semibold text-primary bg-secondary/30 px-1 rounded">
           {part}
         </span>
       ) : (
@@ -118,8 +118,8 @@ export default function CityAutocomplete({ value, onChange, placeholder, classNa
   };
 
   const getInputBorderClass = () => {
-    if (isFocused) return "border-red-500 ring-2 ring-red-500";
-    if (showSuggestions) return "border-red-400";
+    if (isFocused) return "border-primary ring-2 ring-primary";
+    if (showSuggestions) return "border-primary";
     return "border-gray-300";
   };
 
@@ -180,8 +180,8 @@ export default function CityAutocomplete({ value, onChange, placeholder, classNa
               onClick={() => handleSuggestionClick(city)}
               className={`px-4 py-3 cursor-pointer transition-colors ${
                 index === selectedIndex
-                  ? "bg-red-50 border-l-4 border-l-red-500"
-                  : "hover:bg-gray-50 border-l-4 border-l-transparent"
+                  ? " border-l-4 border-l-primary"
+                  : " border-l-4 border-l-transparent"
               }`}
             >
               <div className="flex items-center justify-between">

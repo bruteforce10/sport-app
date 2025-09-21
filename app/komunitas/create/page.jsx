@@ -3,10 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ArrowLeft, Instagram, Facebook, Music } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { FaTiktok, FaInstagramSquare, FaFacebookF } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -157,7 +157,7 @@ export default function CreateCommunityPage() {
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Buat Komunitas</h1>
+              <h1 className="text-2xl font-extrabold text-gray-900">Buat Komunitas</h1>
               <p className="text-gray-600">Tetap terhubung dengan anggota lain di setiap aktivitas!</p>
             </div>
           </div>
@@ -293,7 +293,7 @@ export default function CreateCommunityPage() {
                       <FormLabel className="text-sm font-medium text-gray-700">Instagram</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Instagram className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <FaInstagramSquare className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                           <Input 
                             placeholder="@username atau username" 
                             className="h-12 pl-10"
@@ -314,7 +314,7 @@ export default function CreateCommunityPage() {
                       <FormLabel className="text-sm font-medium text-gray-700">Facebook</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Facebook className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <FaFacebookF className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                           <Input 
                             placeholder="Nama halaman Facebook" 
                             className="h-12 pl-10"
@@ -335,7 +335,7 @@ export default function CreateCommunityPage() {
                       <FormLabel className="text-sm font-medium text-gray-700">TikTok</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Music className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <FaTiktok className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                           <Input 
                             placeholder="@username atau username" 
                             className="h-12 pl-10"
@@ -362,7 +362,7 @@ export default function CreateCommunityPage() {
                         defaultValue={field.value}
                         className="space-y-3"
                       >
-                        <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:border-purple-300 transition-colors">
+                        <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
                           <RadioGroupItem value="open" id="open" className="mt-1" />
                           <div className="flex-1">
                             <label htmlFor="open" className="text-sm font-medium text-gray-900 cursor-pointer">
@@ -374,7 +374,7 @@ export default function CreateCommunityPage() {
                           </div>
                         </div>
                         
-                        <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:border-purple-300 transition-colors">
+                        <div className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
                           <RadioGroupItem value="closed" id="closed" className="mt-1" />
                           <div className="flex-1">
                             <label htmlFor="closed" className="text-sm font-medium text-gray-900 cursor-pointer">
@@ -442,7 +442,7 @@ export default function CreateCommunityPage() {
                     </FormControl>
                     <div className="flex flex-wrap gap-2 mt-3">
                       {field.value.map((tag) => (
-                        <span key={tag} className="inline-flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 rounded-full border">
+                        <span key={tag} className="inline-flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 rounded-full border border-secondary bg-secondary/30 border-[1.5px]">
                           {tag}
                           <button
                             type="button"
@@ -464,7 +464,7 @@ export default function CreateCommunityPage() {
                           <button
                             type="button"
                             key={t}
-                            className="px-3 py-1 text-sm border rounded-full hover:bg-gray-50"
+                            className="px-6 py-1 text-sm border-secondary bg-secondary/30 hover:bg-secondary/50 rounded-full  border-[1.5px]"
                             onClick={() => {
                               if (field.value.length >= 5) {
                                 alert("Maksimal hanya bisa menambahkan 5 tag");
@@ -493,7 +493,7 @@ export default function CreateCommunityPage() {
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold text-lg disabled:opacity-50"
+                  className="w-full h-12 text-white font-semibold text-lg disabled:opacity-50"
                 >
                   {isSubmitting ? 'Menyimpan...' : 'Simpan Komunitas'}
                 </Button>

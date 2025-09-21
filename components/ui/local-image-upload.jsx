@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { Button } from './button';
 import { Card } from './card';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
 
 const LocalImageUpload = ({ value, onChange, className = "" }) => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -62,11 +63,13 @@ const LocalImageUpload = ({ value, onChange, className = "" }) => {
     <div className={className}>
       {previewUrl ? (
         <Card className="relative p-4">
-          <div className="relative w-full h-48 rounded-lg overflow-hidden">
-            <img
+          <div className="relative w-48 h-48 mx-auto rounded-lg overflow-hidden">
+            <Image
+              width={192}
+              height={192}
               src={previewUrl}
               alt="Community avatar preview"
-              className="w-full h-full object-cover"
+              className="aspect-square object-cover"
             />
             <Button
               type="button"
@@ -101,7 +104,7 @@ const LocalImageUpload = ({ value, onChange, className = "" }) => {
             <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <Upload className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
               Upload Avatar Komunitas
             </h3>
             <p className="text-sm text-gray-500 mb-4">
@@ -110,7 +113,7 @@ const LocalImageUpload = ({ value, onChange, className = "" }) => {
             <Button
               type="button"
               onClick={handleClick}
-              className="w-full"
+              className="w-full bg-green-700 hover:bg-green-800"
             >
               Pilih Foto
             </Button>

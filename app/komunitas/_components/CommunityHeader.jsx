@@ -1,14 +1,26 @@
+"use client"
 import AvatarMemberSection from '@/components/molecules/AvatarMemberSection';
 import { MapPin, Star, Share2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function CommunityHeader({ community }) {
+  console.log(community);
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-start space-x-6">
         {/* Community Avatar */}
-        <div className="w-24 h-24 bg-primary-custom rounded-full flex items-center justify-center text-white font-bold text-3xl flex-shrink-0">
-          {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
-        </div>
+
+        {
+          community.avatar ? (
+            <Image src={community.avatar} alt={community.name} 
+            width={96} height={96} className="rounded-full object-cover aspect-square" />
+          ) : (
+            <div className="w-24 h-24 bg-gradient-to-bl from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-3xl flex-shrink-0">
+              {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
+            </div>
+          )
+        }
+        
         
         {/* Community Info */}
         <div className="flex-1">

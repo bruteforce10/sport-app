@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { sportCategories } from "../communities";
-import { Search, Shield, ChevronDown, ChevronRight, Star, MapPin, Users, Calendar, Phone, Mail, Globe, Instagram, Facebook, X } from "lucide-react";
+import { Search, Shield, ChevronDown, ChevronRight,  MapPin, Users, Calendar, Phone, Mail, Globe, Instagram, Facebook, X } from "lucide-react";
+import { MdStar } from "react-icons/md";
 import { 
   fetchCommunities, 
   setFilters, 
@@ -13,7 +14,7 @@ import {
   selectCommunitiesFilters,
   selectIsCommunitiesLoading
 } from "@/lib/slices/communitiesSlice";
-
+import Image from "next/image";
 export default function CommunitiesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -303,9 +304,16 @@ export default function CommunitiesPage() {
               {recommendedCommunities.map((community) => (
                 <div key={community.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start space-x-4 mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
-                    </div>
+                  {
+                      community.avatar ? (
+                        <Image src={community.avatar} alt={community.name} 
+                        width={96} height={96} className="rounded-full w-18 h-18 object-cover aspect-square" />
+                      ) : (
+                        <div className="w-18 h-18 bg-gradient-to-bl from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+                          {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
+                        </div>
+                      )
+                    }
                     <div className="flex-1">
                       <h3 
                         className="font-semibold text-gray-900 text-lg mb-1 cursor-pointer hover:text-purple-600 transition-colors"
@@ -333,7 +341,7 @@ export default function CommunitiesPage() {
 
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <MdStar className="w-5 h-5 text-yellow-500 fill-current" />
                       <span className="text-sm font-medium text-gray-900">{community.rating || 0}</span>
                       <span className="text-sm text-gray-500">({community.reviews || 0})</span>
                     </div>
