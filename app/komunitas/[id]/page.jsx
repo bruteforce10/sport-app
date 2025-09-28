@@ -30,7 +30,8 @@ async function getCommunityData(id) {
 }
 
 export default async function CommunityDetailPage({ params }) {
-  const community = await getCommunityData(params.id);
+  const { id } = await params;
+  const community = await getCommunityData(id);
 
   // Error state - community not found
   if (!community) {
@@ -50,8 +51,8 @@ export default async function CommunityDetailPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-custom">
-      <HeroSection />
+    <div className="min-h-screen bg-gray-custom pb-24">
+      <HeroSection community={community} />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
@@ -60,7 +61,7 @@ export default async function CommunityDetailPage({ params }) {
           <div className="lg:col-span-3 space-y-6">
             <CommunityHeader community={community} />
             <DescriptionSection community={community} />
-            <SocialMediaSection />
+            <SocialMediaSection community={community} />
             <ActivitiesSection />
             <RatingSection />
             <ReviewsSection />

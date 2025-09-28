@@ -5,7 +5,7 @@ export default function ReviewsSection() {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-semibold text-dark-custom mb-4">Ulasan</h2>
+      <h2 className="text-xl font-bold text-dark-custom mb-4">Ulasan</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {reviews.map((i) => (
           <div key={i} className="bg-gray-custom rounded-lg p-4">

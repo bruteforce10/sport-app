@@ -30,7 +30,6 @@ export default function CommunitiesPage() {
   // Local state
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || "All");
-  const [showAllCategories, setShowAllCategories] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [activeSearchQuery, setActiveSearchQuery] = useState(searchParams.get('search') || "");
 
@@ -69,7 +68,6 @@ export default function CommunitiesPage() {
   });
 
   const recommendedCommunities = filteredCommunities.slice(0, 10);
-  const displayedCategories = showAllCategories ? sportCategories : sportCategories.slice(0, 6);
 
   // Handle search with button click
   const handleSearch = () => {

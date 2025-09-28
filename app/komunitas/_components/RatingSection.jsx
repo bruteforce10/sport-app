@@ -10,7 +10,7 @@ export default function RatingSection() {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-semibold text-dark-custom mb-4">Rating</h2>
+      <h2 className="text-xl font-bold text-dark-custom mb-4">Rating</h2>
       <div className="flex items-center space-x-4 mb-6">
         <div className="flex items-center space-x-2">
           <Star className="w-8 h-8 text-yellow-400 fill-current" />

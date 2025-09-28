@@ -6,7 +6,7 @@ import { getUserByClerkId, syncUserFromClerk } from '@/lib/userService';
 // GET /api/communities/[id] - Get community by ID
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     const community = await CommunityService.getCommunityById(id);
     
@@ -31,7 +31,7 @@ export async function GET(request, { params }) {
 // PUT /api/communities/[id] - Update community
 export async function PUT(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     // Ensure user is authenticated via Clerk
     const clerkUser = await currentUser();
     if (!clerkUser) {
@@ -98,7 +98,7 @@ export async function PUT(request, { params }) {
 // DELETE /api/communities/[id] - Delete community
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     // Ensure user is authenticated via Clerk
     const clerkUser = await currentUser();
     if (!clerkUser) {
