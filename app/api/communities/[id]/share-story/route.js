@@ -4,13 +4,39 @@ export const runtime = 'nodejs';
 import fs from 'fs';
 import path from 'path';
 
+// Utility untuk wrap text ke beberapa baris
+function wrapText(text, maxWidth, fontSize) {
+  const charWidth = fontSize * 0.55; // estimasi lebar per karakter
+  const words = text.split(' ');
+  let lines = [];
+  let currentLine = '';
+
+  words.forEach(word => {
+    let testLine = currentLine ? currentLine + ' ' + word : word;
+    let testWidth = testLine.length * charWidth;
+
+    if (testWidth > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  });
+
+  if (currentLine) lines.push(currentLine);
+  return lines;
+}
+
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name') || 'Community Name';
     const category = searchParams.get('category') || 'Sports';
-    
+    const avatar = searchParams.get('avatar') || '';
+    const members = searchParams.get('members') || 0;
+    const activityTags = searchParams.get('activityTags') || '';
+
     // Read and convert background image to base64
     let backgroundImageDataUri = '';
     try {
@@ -20,95 +46,189 @@ export async function GET(request, { params }) {
       backgroundImageDataUri = `data:image/png;base64,${base64Image}`;
     } catch (imageError) {
       console.error('Error reading background image:', imageError);
-      // Fallback: will use gradient only
     }
-    
-    // Sanitize text to prevent SVG injection
+
+    // Convert logo/avatar to base64 if provided
+    let avatarDataUri = '';
+    if (avatar) {
+      try {
+        const avatarResponse = await fetch(avatar);
+        if (avatarResponse.ok) {
+          const avatarBuffer = await avatarResponse.arrayBuffer();
+          const avatarBase64 = Buffer.from(avatarBuffer).toString('base64');
+          const imageType = avatar.includes('.png') ? 'png' : 
+                          avatar.includes('.gif') ? 'gif' : 'jpeg';
+          avatarDataUri = `data:image/${imageType};base64,${avatarBase64}`;
+        }
+      } catch (avatarError) {
+        console.error('Error converting avatar to base64:', avatarError);
+      }
+    }
+
+    // Sanitize text
     const sanitizeText = (text) => {
       return text
-        .replace(/[<>]/g, '') // Remove potential HTML/SVG tags
-        .replace(/&/g, '&amp;') // Escape ampersand
-        .replace(/"/g, '&quot;') // Escape quotes
-        .replace(/'/g, '&#39;'); // Escape single quotes
+        .replace(/[<>]/g, '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     };
-    
+
     const safeName = sanitizeText(name);
     const safeCategory = sanitizeText(category);
 
-    // Create SVG with background image
+    // Initials fallback
+    const initials = name.split(' ').map(word => word[0]).join('').slice(0, 3);
+
+    // Avatar element
+    let avatarElement = '';
+    if (avatarDataUri) {
+      avatarElement = `
+      <g transform="translate(0, -80)">
+        <defs>
+          <clipPath id="circleClip">
+            <circle cx="0" cy="0" r="100"/>
+          </clipPath>
+        </defs>
+        <image href="${avatarDataUri}" x="-100" y="100" width="200" height="200" preserveAspectRatio="xMidYMid slice" clip-path="url(#circleClip)"/>
+        </g>
+      `;
+    } else {
+      avatarElement = `
+        <g transform="translate(0, -80)">
+        <circle cx="0" cy="0" r="100" fill="#CCCCCC"/>
+        <text x="0" y="15" text-anchor="middle" font-family="system-ui, sans-serif" font-size="48" font-weight="bold" fill="white">${initials}</text>
+        </g>
+      `;
+    }
+
+    // Wrap Nama Komunitas
+    const fontSize = 90;
+    const maxWidth = 800;
+    const nameLines = wrapText(safeName, maxWidth, fontSize);
+
+    let nameElement = `
+      <text x="0" y="120" text-anchor="middle" font-family="system-ui, sans-serif" 
+        font-size="${fontSize}" font-weight="bold" fill="white">
+        ${nameLines.map((line, i) => `
+          <tspan x="0" dy="${i === 0 ? 0 : fontSize + 10}">${line}</tspan>
+        `).join('')}
+      </text>
+    `;
+
+    // Activity Tags with auto-wrap
+    const tags = activityTags.split(',').map(tag => tag.trim()).filter(Boolean);
+    let tagsElement = '';
+    if (tags.length > 0) {
+      const spacingX = 20;
+      const spacingY = 20;
+      const tagHeight = 60;
+      const maxWidthTags = 800;
+      let x = 0;
+      let y = 300;
+      let lineGroups = [];
+      let currentLine = '';
+      let currentLineWidth = 0;
+
+      tags.forEach((tag, i) => {
+        const textWidth = tag.length * 20;
+        const tagWidth = textWidth + 80;
+
+        if (currentLineWidth + tagWidth + spacingX > maxWidthTags && currentLine !== '') {
+          lineGroups.push({ content: currentLine, width: currentLineWidth });
+          currentLine = '';
+          currentLineWidth = 0;
+          y += tagHeight + spacingY;
+          x = 0;
+        }
+
+        currentLine += `
+          <g transform="translate(${x},${y})">
+            <rect x="0" y="0" rx="30" ry="30" width="${tagWidth}" height="${tagHeight}" fill="blue"/>
+            <text x="${tagWidth/2}" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="45" font-weight="500" fill="#FFF">
+              ${tag}
+            </text>
+          </g>
+        `;
+        x += tagWidth + spacingX;
+        currentLineWidth += tagWidth + spacingX;
+
+        if (i === tags.length - 1) {
+          lineGroups.push({ content: currentLine, width: currentLineWidth });
+        }
+      });
+
+      tagsElement = lineGroups.map((line, idx) => {
+        return `
+          <g transform="translate(-${line.width / 2}, ${310 + idx * (tagHeight + spacingY)} )">
+            ${line.content}
+          </g>
+        `;
+      }).join('');
+    }
+
+    // Final SVG
     const svg = `
       <svg width="1080" height="1920" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <!-- Gradient background -->
-          <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
-            <stop offset="50%" style="stop-color:#7B68EE;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
-          </linearGradient>
-        <!-- Background image -->
-        <image id="bgImage" href="${backgroundImageDataUri}" width="1080" height="1920" preserveAspectRatio="xMidYMid slice"/>
-        </defs>
-        
-        <!-- Background gradient -->
-        <rect width="1080" height="1920" fill="url(#bgGradient)"/>
-        <!-- Background image - try direct image element -->
+        <!-- Background -->
         <image href="${backgroundImageDataUri}" width="1080" height="1920" preserveAspectRatio="xMidYMid slice"/>
-        
-        <!-- Dark overlay for better text visibility -->
-        <rect width="100%" height="100%" fill="rgba(0,0,0,0.4)"/>
-        
-        <!-- Top section with name and category -->
-        <g transform="translate(540, 400)">
-          <text x="0" y="0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="bold" fill="white">
-            ${safeName} 
-          </text>
-          <text x="0" y="80" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#CCCCCC" opacity="0.9">
+
+        <!-- Konten Tengah -->
+        <g transform="translate(530,550)">
+          <!-- Avatar -->
+          ${avatarElement}
+
+          <!-- Nama Komunitas -->
+          ${nameElement}
+
+          
+          <!-- Kategori -->
+          <text x="0" y="${90 + (nameLines.length * (fontSize + 10)) + 50}" text-anchor="middle" 
+            font-family="system-ui, sans-serif" font-size="50" fill="white" font-weight="bold">
             ${safeCategory}
           </text>
-        </g>
-        
-        <!-- Bottom section with button -->
-        <g transform="translate(540, 1500)">
-          <rect x="-140" y="-30" width="280" height="60" rx="20" fill="#8B5CF6"/>
-          <text x="0" y="8" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="bold" fill="white">
-            Gabung Sekarang
+
+          <!-- Anggota -->
+          <text x="0" y="${120 + (nameLines.length * (fontSize + 10)) + 100}" text-anchor="middle" 
+            font-family="system-ui, sans-serif" font-size="50" fill="white">
+            (${members} Anggota)
           </text>
+
+
+          <!-- Activity Tags -->
+          ${tagsElement}
+
+
+          <text x="0" y="850" text-anchor="middle" 
+            font-family="system-ui, sans-serif" font-size="65" font-weight="bold" fill="white">
+           Gabung Sekarang
+          </text>
+
+          <!-- Tombol CTA -->
+          <g transform="translate(0, 950) scale(1.4)">
+            <rect x="-200" y="-50" width="400" height="80" rx="20" fill="#FFFF00"/>
+            <text x="0" y="0" text-anchor="middle" font-family="system-ui, sans-serif" font-size="36" font-weight="bold" fill="#000000">
+              www.sportapp.id
+            </text>
+          </g>
         </g>
-        
-        <!-- Decorative elements -->
-        <circle cx="200" cy="300" r="100" fill="#8B5CF6" opacity="0.1"/>
-        <circle cx="880" cy="1400" r="80" fill="#8B5CF6" opacity="0.1"/>
-        <circle cx="150" cy="1600" r="60" fill="#8B5CF6" opacity="0.1"/>
       </svg>
     `;
 
-    console.log('Generated SVG for:', { id, name: safeName, category: safeCategory });
-    
-    // Return SVG for now - we'll handle PNG conversion in the frontend
     return new Response(svg, {
       headers: {
         'Content-Type': 'image/svg+xml',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
       },
     });
   } catch (error) {
     console.error('Error generating share story:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      params: { id: params?.id }
-    });
-    
     return new Response(JSON.stringify({ 
       error: 'Failed to generate story image',
       message: error.message 
     }), { 
       status: 500,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

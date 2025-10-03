@@ -8,6 +8,7 @@ import { MdStar } from 'react-icons/md';
 
 export default function CommunityHeader({ community }) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  console.log(community.avatar);
 
   return (
     <>

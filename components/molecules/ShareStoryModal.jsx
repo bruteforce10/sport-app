@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect  } from 'react';
 import Image from 'next/image';
 import { Download, Share2, MessageCircle, Instagram } from 'lucide-react';
 import {
@@ -16,6 +16,8 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
   const [error, setError] = useState(null);
+
+
 
   const svgToPng = async (svgString) => {
     return new Promise((resolve, reject) => {
@@ -68,6 +70,9 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
       const params = new URLSearchParams({
         name: community.name,
         category: community.category,
+        avatar: community.avatar || '',
+        members: community.memberships.length,
+        activityTags: community.activityTags,
       });
       
       const response = await fetch(`/api/communities/${community.id}/share-story?${params}&t=${Date.now()}`);
@@ -127,6 +132,12 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
     onClose();
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      generateStoryImage();
+    }
+  }, [community, isOpen]);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md mx-auto">
@@ -138,20 +149,6 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
         </DialogHeader>
         
         <div className="space-y-4">
-          {!generatedImageUrl && !isGenerating && (
-            <div className="text-center py-8">
-              <Share2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-4">
-                Klik tombol di bawah untuk membuat gambar story
-              </p>
-              <Button 
-                onClick={generateStoryImage}
-                className="w-full bg-primary-custom hover:opacity-90"
-              >
-                Buat Story Image
-              </Button>
-            </div>
-          )}
 
           {isGenerating && (
             <div className="text-center py-8">
@@ -215,16 +212,6 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
                 >
                   <Download className="w-6 h-6 mb-2 text-blue-600" />
                   <span className="text-xs">Download</span>
-                </Button>
-              </div>
-
-              <div className="text-center">
-                <Button
-                  onClick={generateStoryImage}
-                  variant="ghost"
-                  className="text-sm text-gray-600"
-                >
-                  Buat Ulang
                 </Button>
               </div>
             </div>
