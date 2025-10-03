@@ -1,12 +1,27 @@
 // Ensure this only runs on server side
 export const runtime = 'nodejs';
 
+import fs from 'fs';
+import path from 'path';
+
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name') || 'Community Name';
     const category = searchParams.get('category') || 'Sports';
+    
+    // Read and convert background image to base64
+    let backgroundImageDataUri = '';
+    try {
+      const imagePath = path.join(process.cwd(), 'public', 'bg-cover-share.png');
+      const imageBuffer = fs.readFileSync(imagePath);
+      const base64Image = imageBuffer.toString('base64');
+      backgroundImageDataUri = `data:image/png;base64,${base64Image}`;
+    } catch (imageError) {
+      console.error('Error reading background image:', imageError);
+      // Fallback: will use gradient only
+    }
     
     // Sanitize text to prevent SVG injection
     const sanitizeText = (text) => {
@@ -20,18 +35,34 @@ export async function GET(request, { params }) {
     const safeName = sanitizeText(name);
     const safeCategory = sanitizeText(category);
 
-    // Create a simple SVG with black background
+    // Create SVG with background image
     const svg = `
       <svg width="1080" height="1920" xmlns="http://www.w3.org/2000/svg">
-        <!-- Black background -->
-        <rect width="100%" height="100%" fill="#000000"/>
+        <defs>
+          <!-- Gradient background -->
+          <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#7B68EE;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+          </linearGradient>
+        <!-- Background image -->
+        <image id="bgImage" href="${backgroundImageDataUri}" width="1080" height="1920" preserveAspectRatio="xMidYMid slice"/>
+        </defs>
+        
+        <!-- Background gradient -->
+        <rect width="1080" height="1920" fill="url(#bgGradient)"/>
+        <!-- Background image - try direct image element -->
+        <image href="${backgroundImageDataUri}" width="1080" height="1920" preserveAspectRatio="xMidYMid slice"/>
+        
+        <!-- Dark overlay for better text visibility -->
+        <rect width="100%" height="100%" fill="rgba(0,0,0,0.4)"/>
         
         <!-- Top section with name and category -->
         <g transform="translate(540, 400)">
           <text x="0" y="0" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="bold" fill="white">
-            ${safeName}
+            ${safeName} 
           </text>
-          <text x="0" y="80" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#CCCCCC" opacity="0.8">
+          <text x="0" y="80" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#CCCCCC" opacity="0.9">
             ${safeCategory}
           </text>
         </g>
@@ -57,7 +88,9 @@ export async function GET(request, { params }) {
     return new Response(svg, {
       headers: {
         'Content-Type': 'image/svg+xml',
-        'Cache-Control': 'public, max-age=3600',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       },
     });
   } catch (error) {

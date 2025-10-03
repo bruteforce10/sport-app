@@ -70,7 +70,7 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
         category: community.category,
       });
       
-      const response = await fetch(`/api/communities/${community.id}/share-story?${params}`);
+      const response = await fetch(`/api/communities/${community.id}/share-story?${params}&t=${Date.now()}`);
       
       if (!response.ok) {
         const errorText = await response.text();
