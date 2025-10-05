@@ -2,7 +2,7 @@
 
 import { useState, useEffect  } from 'react';
 import Image from 'next/image';
-import { Download, Share2, MessageCircle, Instagram } from 'lucide-react';
+import { Download, Share2, MessageCircle, Instagram, Link } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -106,10 +106,26 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
     window.open(whatsappUrl, '_blank');
   };
 
-  const handleInstagramShare = () => {
-    if (!generatedImageUrl) return;
+  const handleCopyLink = async () => {
+    if (!community) return;
     
-    window.open(generatedImageUrl, '_blank');
+    const communityUrl = `${window.location.origin}/komunitas/${community.id}`;
+    
+    try {
+      await navigator.clipboard.writeText(communityUrl);
+      // You could add a toast notification here
+      alert('Link berhasil disalin!');
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = communityUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('Link berhasil disalin!');
+    }
   };
 
   const handleDownload = () => {
@@ -117,7 +133,7 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
     
     const link = document.createElement('a');
     link.href = generatedImageUrl;
-    link.download = `${community.name}-story.png`;
+    link.download = `${community?.name || 'community'}-story.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -174,7 +190,7 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
             <div className="space-y-4">
               {/* Preview */}
               <div className="relative bg-gray-100 rounded-lg overflow-hidden">
-                <div className="aspect-[9/16] w-full max-w-[200px] mx-auto">
+                <div className="aspect-[9/16] w-45 mx-auto">
                   <Image
                     src={generatedImageUrl}
                     alt="Story Preview"
@@ -197,12 +213,12 @@ export default function ShareStoryModal({ isOpen, onClose, community }) {
                 </Button>
 
                 <Button
-                  onClick={handleInstagramShare}
+                  onClick={handleCopyLink}
                   variant="outline"
                   className="flex flex-col items-center p-4 h-auto"
                 >
-                  <Instagram className="w-6 h-6 mb-2 text-pink-600" />
-                  <span className="text-xs">Instagram</span>
+                  <Link className="w-6 h-6 mb-2 text-gray-600" />
+                  <span className="text-xs">Salin Link</span>
                 </Button>
 
                 <Button

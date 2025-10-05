@@ -121,11 +121,11 @@ export async function GET(request, { params }) {
     let tagsElement = '';
     if (tags.length > 0) {
       const spacingX = 20;
-      const spacingY = 20;
+      const spacingY = -20;
       const tagHeight = 60;
       const maxWidthTags = 800;
       let x = 0;
-      let y = 300;
+      let y = 270;
       let lineGroups = [];
       let currentLine = '';
       let currentLineWidth = 0;

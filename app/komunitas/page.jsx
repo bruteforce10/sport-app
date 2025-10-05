@@ -15,6 +15,8 @@ import {
   selectIsCommunitiesLoading
 } from "@/lib/slices/communitiesSlice";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
 export default function CommunitiesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -150,11 +152,13 @@ export default function CommunitiesPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="relative bg-[url('/cover-komunitas.webp')] bg-cover bg-center text-white py-12">
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+        {/* Content */}
+        <div className="relative max-w-6xl mx-auto px-4">
           <h1 className="text-4xl font-bold text-center mb-2">Komunitas</h1>
           <p className="text-xl text-center mb-8 opacity-90">
-            Yuk gabung di lebih dari {isLoading ? '...' : communities.length.toLocaleString()} komunitas di AYO!
+            Lebih dari  {isLoading ? '...' : communities.length.toLocaleString()} komunitas siap bikin kamu makin Active! 
           </p>
           
           {/* Enhanced Search Bar */}
@@ -162,13 +166,13 @@ export default function CommunitiesPage() {
             <div className="flex gap-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
+                <Input
                   type="text"
                   placeholder="Cari komunitas berdasarkan nama, kota, atau deskripsi..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="w-full pl-10 pr-10 py-3 rounded-l-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  className="w-full pl-10 pr-10 py-6 rounded-l-lg placeholder-gray-500  bg-white"
                 />
                 {searchQuery && (
                   <button
@@ -179,36 +183,18 @@ export default function CommunitiesPage() {
                   </button>
                 )}
               </div>
-              <button
-                onClick={handleSearch}
-                disabled={isSearching}
-                className="bg-purple-700 hover:bg-purple-800 disabled:bg-purple-500 text-white px-6 py-3 rounded-r-lg font-semibold flex items-center space-x-2 transition-colors min-w-[140px] justify-center"
-              >
-                {isSearching ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>Mencari...</span>
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-4 h-4" />
-                    <span>Cari Komunitas</span>
-                  </>
-                )}
-              </button>
             </div>
           </div>
 
           {/* Create Community Button */}
           <div className="text-center">
-            <a 
+            <Link 
               href="/komunitas/create"
-              className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold flex items-center justify-center mx-auto space-x-2 hover:bg-gray-50 transition-colors inline-block"
+              className="bg-radial-[at_50%_75%] from-green-200 via-secondary to-green-400 to-90% px-6 py-3 rounded-lg font-semibold flex items-center justify-center mx-auto space-x-2 w-fit text-secondary-foreground hover:scale-105 transition-all duration-300"
             >
-              <Shield className="w-5 h-5" />
-              <span>Buat dan Kelola Komunitas</span>
-              <ChevronRight className="w-5 h-5" />
-            </a>
+              <Shield className="w-5 h-5 opacity-75" />
+              <span className="opacity-75">Buat dan Kelola Komunitas</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -332,10 +318,6 @@ export default function CommunitiesPage() {
                       {getCategoryIcon(community.category)}
                     </div>
                   </div>
-
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {community.description || 'Deskripsi tidak tersedia'}
-                  </p>
 
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-1">
