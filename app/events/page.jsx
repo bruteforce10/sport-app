@@ -1,88 +1,91 @@
-"use client";
-import { useMemo } from "react";
-import { useSearchParams } from "next/navigation";
-import EventCard from "../../components/molecules/EventCard";
-import { events } from "../events";
-import SearchSection from "../../components/organisms/SearchSection";
+'use client';
 
-function filterEvents({ search, city, category }) {
-  const keyword = (search || "").toString().trim().toLowerCase();
-  const cityLower = (city || "").toString().trim().toLowerCase();
-  const categoryLower = (category || "").toString().trim().toLowerCase();
-
-  return events.filter((e) => {
-    // keyword match across multiple fields
-    const matchesKeyword = keyword
-      ? [e.name, e.category, e.location, e.club?.name, e.skillLevel]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase()
-          .includes(keyword)
-      : true;
-
-    // city match inside the location text
-    const matchesCity = cityLower
-      ? (e.location || "").toLowerCase().includes(cityLower)
-      : true;
-
-    // category exact match
-    const matchesCategory = categoryLower
-      ? (e.category || "").toLowerCase() === categoryLower
-      : true;
-
-    return matchesKeyword && matchesCity && matchesCategory;
-  });
-}
+import EventCard from "@/components/molecules/EventCard";
 
 export default function EventsPage() {
-  const searchParams = useSearchParams();
-  const search = (searchParams.get("search") || "").toString().trim();
-  const city = (searchParams.get("city") || "").toString().trim();
-  const category = (searchParams.get("category") || "").toString().trim();
-  const filtered = useMemo(
-    () => filterEvents({ search, city, category }),
-    [search, city, category]
-  );
+  // Sample data berdasarkan referensi gambar
+  const sampleEvents = [
+    {
+      id: 1,
+      price: 45000,
+      clubName: "Break Point Club",
+      eventType: "Open Session",
+      sport: "badminton",
+      skillLevel: "Beginner - Intermediate",
+      date: "Sen, 06 Okt 2025",
+      time: "20:00 - 22:00",
+      court: "Lapangan 1",
+      venue: "Jifi Badminton Arena",
+      location: "Tebet, Kota Jakarta Selatan",
+      currentParticipants: 9,
+      maxParticipants: 14,
+      participants: [
+        { name: "Ahmad Jaya", avatar: null },
+        { name: "Indra Adi", avatar: null },
+        { name: "Tina Fitri", avatar: null },
+        { name: "Budi Santoso", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
+        { name: "Sari Dewi", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" }
+      ]
+    },
+    {
+      id: 2,
+      price: 35000,
+      clubName: "Sports Center",
+      eventType: "Weekly Training",
+      sport: "basketball",
+      skillLevel: "Intermediate - Advanced",
+      date: "Rab, 08 Okt 2025",
+      time: "19:00 - 21:00",
+      court: "Court A",
+      venue: "Basketball Arena",
+      location: "Senayan, Jakarta Pusat",
+      currentParticipants: 6,
+      maxParticipants: 10,
+      participants: [
+        { name: "Rizky Pratama", avatar: null },
+        { name: "Dewi Sari", avatar: null },
+        { name: "Agus Wijaya", avatar: null }
+      ]
+    },
+    {
+      id: 3,
+      price: 25000,
+      clubName: "Futsal Pro",
+      eventType: "Casual Play",
+      sport: "futsal",
+      skillLevel: "All Levels",
+      date: "Jum, 10 Okt 2025",
+      time: "18:00 - 20:00",
+      court: "Lapangan 2",
+      venue: "Futsal Center",
+      location: "Menteng, Jakarta Pusat",
+      currentParticipants: 8,
+      maxParticipants: 10,
+      participants: [
+        { name: "Bambang", avatar: null },
+        { name: "Citra", avatar: null },
+        { name: "Dedi", avatar: null },
+        { name: "Eka", avatar: null }
+      ]
+    }
+  ];
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-4">
-        <SearchSection />
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">Daftar Kegiatan</h1>
-          <p className="text-sm text-gray-600 flex flex-wrap items-center gap-2">
-            <span className="text-gray-500">Menampilkan</span>
-            <span className="font-medium">{filtered.length}</span>
-            <span className="text-gray-500">event mabar</span>
-            {(search || city || category) && (
-              <span className="text-gray-400">•</span>
-            )}
-            {search && (
-              <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-700">kata: {search}</span>
-            )}
-            {city && (
-              <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-700">kota: {city}</span>
-            )}
-            {category && (
-              <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-700">cabang: {category}</span>
-            )}
+    <main className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Events</h1>
+          <p className="text-xl text-gray-600">
+            Temukan dan ikuti event olahraga terbaik di sekitar Anda
           </p>
         </div>
 
-        {filtered.length === 0 ? (
-          <div className="text-center text-gray-600 py-16">
-            Tidak ada kegiatan yang cocok.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {filtered.map((e) => (
-              <EventCard key={e.id} event={e} isSelected={false} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sampleEvents.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </div>
       </div>
     </main>
   );
 }
-
-

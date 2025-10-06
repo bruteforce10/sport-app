@@ -286,50 +286,53 @@ export default function CommunitiesPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendedCommunities.map((community) => (
-                <div key={community.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start space-x-4 mb-4">
-                  {
-                      community.avatar ? (
-                        <Image src={community.avatar} alt={community.name} 
-                        width={96} height={96} className="rounded-full w-18 h-18 object-cover aspect-square" />
-                      ) : (
-                        <div className="w-18 h-18 bg-gradient-to-bl from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
-                          {community.name.split(' ').map(word => word[0]).join('').slice(0, 3)}
-                        </div>
-                      )
-                    }
-                    <div className="flex-1">
-                      <h3 
-                        className="font-semibold text-gray-900 text-lg mb-1 cursor-pointer hover:text-purple-600 transition-colors"
-                        onClick={() => router.push(`/komunitas/${community.id}`)}
-                      >
-                        {community.name}
-                      </h3>
-                      <div className="flex items-center text-sm text-gray-500 mb-1">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {community.city || 'Lokasi tidak tersedia'}
+                <div key={community.id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  {/* Header dengan rating dan ikon sport */}
+                  <div className="flex items-start justify-between mb-4">
+                  {community.avatar ? (
+                      <Image src={community.avatar} alt={community.name} 
+                      width={60} height={60} className="rounded-full w-15 h-15 object-cover aspect-square" />
+                    ) : (
+                      <div className="w-15 h-15 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                        {community.name.split(' ').map(word => word[0]).join('').slice(0, 2)}
                       </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Users className="w-4 h-4 mr-1" />
-                        {community.members ? community.members.toLocaleString() : '0'} Anggota
-                      </div>
-                    </div>
-                    <div className="text-2xl">
-                      {getCategoryIcon(community.category)}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between mb-4">
+                    )}
                     <div className="flex items-center space-x-1">
                       <MdStar className="w-5 h-5 text-yellow-500 fill-current" />
                       <span className="text-sm font-medium text-gray-900">{community.rating || 0}</span>
                       <span className="text-sm text-gray-500">({community.reviews || 0})</span>
                     </div>
+                  </div>
+
+                  {/* Avatar dan info komunitas */}
+                  <div className="mb-4">
+                    <div className="flex-1">
+                      <h3 
+                        className="font-bold text-gray-900 text-lg mb-1 cursor-pointer hover:text-purple-600 transition-colors"
+                        onClick={() => router.push(`/komunitas/${community.id}`)}
+                      >
+                        {community.name}
+                      </h3>
+                      
+                      <div className="flex items-center text-sm text-gray-500">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        {community.city || 'Lokasi tidak tersedia'}
+                      </div>
+                      <div className="text-2xl">
+                      {getCategoryIcon(community.category)}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Users className="w-4 h-4 mr-1" />
+                      <span>{community.members ? community.members.toLocaleString() : '0'} Anggota</span>
+                    </div>
+                    </div>
                     <div className="text-sm text-gray-500">
-                      {community.createdAt ? `Dibuat ${new Date(community.createdAt).getFullYear()}` : 'Baru dibuat'}
+                      {community.createdAt ? `${new Date(community.createdAt).getFullYear()}` : 'Baru'}
                     </div>
                   </div>
 
+
+                  {/* Activity tags */}
                   {community.activityTags && community.activityTags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
                       {community.activityTags.slice(0, 3).map((activity, index) => (
@@ -340,8 +343,9 @@ export default function CommunitiesPage() {
                     </div>
                   )}
 
-                  <button className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
-                    Gabung
+                  {/* Button */}
+                  <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg text-sm font-semibold hover:bg-purple-700 transition-colors">
+                    Gabung Komunitas
                   </button>
                 </div>
               ))}
