@@ -97,7 +97,7 @@ const EventCard = ({ event }) => {
         <div className="flex items-center space-x-2">
           {/* Avatar peserta */}
           <div className="flex -space-x-2">
-            {event.participants?.slice(0, 3).map((participant, index) => (
+            {(Array.isArray(event.participants) ? event.participants : []).slice(0, 3).map((participant, index) => (
               <div key={index} className="relative">
                 {participant.avatar ? (
                   <Image
@@ -116,7 +116,7 @@ const EventCard = ({ event }) => {
             ))}
             
             {/* Slot kosong */}
-            {Array.from({ length: Math.max(0, event.maxParticipants - (event.participants?.length || 0)) }).map((_, index) => (
+            {Array.from({ length: Math.max(0, event.maxParticipants - (Array.isArray(event.participants) ? event.participants.length : 0)) }).map((_, index) => (
               <div key={`empty-${index}`} className="w-8 h-8 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center">
                 <span className="text-gray-400 text-xs">+</span>
               </div>
@@ -125,7 +125,7 @@ const EventCard = ({ event }) => {
         </div>
         
         <div className="text-sm text-gray-500">
-          <span className="text-gray-400">•</span> {event.currentParticipants || 0}/{event.maxParticipants || 0}
+          <span className="text-gray-400">•</span> {event.currentParticipants || (Array.isArray(event.participants) ? event.participants.length : 0)}/{event.maxParticipants || 0}
         </div>
       </div>
 
