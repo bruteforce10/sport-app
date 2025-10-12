@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPin, Calendar, Clock, Users, Star, Eye, Badminton } from "lucide-react";
+import { MapPin, Calendar, Clock, Users, Star, Eye, Activity } from "lucide-react";
 
 const EventCard = ({ event }) => {
   const formatPrice = (price) => {
@@ -12,14 +12,14 @@ const EventCard = ({ event }) => {
 
   const getSportIcon = (sport) => {
     const icons = {
-      badminton: Badminton,
+      badminton: Activity,
       basketball: "🏀",
       futsal: "⚽",
       tennis: "🎾",
       volleyball: "🏐",
       padel: "🎾"
     };
-    return icons[sport] || Badminton;
+    return icons[sport] || Activity;
   };
 
   const getSportEmoji = (sport) => {

@@ -372,7 +372,7 @@ export const sportCategories = [
     communities: communities.filter(c => c.category === "Futsal")
   },
   {
-    name: "Sepak Bola",
+    name: "Futsall",
     icon: "⚽",
     count: 6500,
     communities: communities.filter(c => c.category === "Football")

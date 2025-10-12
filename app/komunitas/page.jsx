@@ -18,6 +18,9 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { BadmintonIcon, BasketballIcon, PadelIcon, TennisIcon, SoccerIcon } from "@/lib/icon";
+
+
 export default function CommunitiesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -131,21 +134,15 @@ export default function CommunitiesPage() {
     router.push('/komunitas');
   };
 
-  // Get category icon
-  const getCategoryIcon = (category) => {
+  // Get category icon dengan kontrol warna yang lebih baik
+  const getCategoryIcon = (category, fill = '#4a5565') => {
     const categoryMap = {
-      'Padel': '🏓',
-      'Tennis': '🎾',
-      'Badminton': '🏸',
-      'Futsal': '⚽',
-      'Football': '⚽',
-      'Basketball': '🏀',
-      'Billiard': '🎱',
-      'Swimming': '🏊',
-      'Gym': '💪',
-      'Running': '🏃',
-      'Cycling': '🚴',
-      'Volleyball': '🏐'
+      'Padel': <PadelIcon fill={fill} width={24} height={24}  />,
+      'Tennis': <TennisIcon fill={fill} width={24} height={24}  />,
+      'Badminton': <BadmintonIcon fill={fill} width={24} height={24}  />,
+      'Futsal': <SoccerIcon fill={fill} width={24} height={24}  />,
+      'Mini Soccer': <SoccerIcon fill={fill} width={24} height={24}  />,
+      'Basketball': <BasketballIcon fill={fill} width={24} height={24}  />,
     };
     return categoryMap[category] || '🏆';
   };
@@ -173,7 +170,7 @@ export default function CommunitiesPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="w-full pl-10 pr-10 py-6 rounded-l-lg placeholder-gray-500  bg-white"
+                  className="w-full pl-10 pr-10 py-6 rounded-l-lg placeholder-gray-500  bg-white text-gray-500"
                 />
                 {searchQuery && (
                   <button
@@ -221,7 +218,7 @@ export default function CommunitiesPage() {
             {activeSearchQuery && (
               <button
                 onClick={clearSearch}
-                className="text-purple-600 hover:text-purple-700 font-medium flex items-center space-x-1"
+                className="text-primary font-medium flex items-center space-x-1"
               >
                 <X className="w-4 h-4" />
                 <span>Hapus Pencarian</span>
@@ -231,17 +228,18 @@ export default function CommunitiesPage() {
 
           {/* Enhanced Filter Buttons */}
           <div className="flex space-x-2 mb-6 overflow-x-auto pb-2">
-            {['All', 'Padel', 'Tennis', 'Badminton', 'Futsal', 'Football', 'Basketball'].map((category) => (
+            {['All', 'Padel', 'Tennis', 'Badminton', 'Futsal', 'Mini Soccer', 'Basketball'].map((category) => (
               <button
                 key={category}
                 onClick={() => handleCategoryFilter(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2 ${
                   selectedCategory === category
-                    ? 'bg-purple-600 text-white'
+                    ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {category}
+                {getCategoryIcon(category, selectedCategory === category ? '#fff' : '#4a5565')}
+                <span>{category}</span>
               </button>
             ))}
           </div>
@@ -249,7 +247,7 @@ export default function CommunitiesPage() {
           {/* Communities Grid */}
           {isLoading || isSearching ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-gray-500">
                 {isSearching ? 'Mencari komunitas...' : 'Memuat komunitas...'}
               </p>
@@ -259,7 +257,7 @@ export default function CommunitiesPage() {
               <p className="text-red-600 mb-4">{error}</p>
               <button 
                 onClick={() => dispatch(fetchCommunities())}
-                className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+                className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/70 transition-colors"
               >
                 Coba Lagi
               </button>
@@ -278,7 +276,7 @@ export default function CommunitiesPage() {
               {activeSearchQuery && (
                 <button
                   onClick={clearSearch}
-                  className="text-purple-600 hover:text-purple-700 font-medium"
+                  className="text-primary hover:text-primary/70 font-medium"
                 >
                   Coba kata kunci lain atau hapus filter
                 </button>
@@ -289,7 +287,7 @@ export default function CommunitiesPage() {
               {recommendedCommunities.map((community) => (
                 <div key={community.id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   {/* Header dengan rating dan ikon sport */}
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center space-x-4 pr-8">
                   {community.avatar ? (
                       <Image src={community.avatar} alt={community.name} 
@@ -300,7 +298,7 @@ export default function CommunitiesPage() {
                       </div>
                     )}
                      <h3 
-                        className="font-bold text-gray-900 text-lg mb-1 cursor-pointer hover:text-purple-600 transition-colors max-w-[150px] leading-6"
+                        className="font-bold text-gray-900 text-lg mb-1 cursor-pointer hover:text-blue-800 transition-colors max-w-[150px] leading-6"
                         onClick={() => router.push(`/komunitas/${community.id}`)}
                       >
                         {community.name}
@@ -315,10 +313,10 @@ export default function CommunitiesPage() {
 
                   {/* Avatar dan info komunitas */}
                   <div className="mb-4">
-                    <div className="flex gap-2 items-center">
-                    <div className="text-2xl">
-                      {getCategoryIcon(community.category)}
+                  <div className="flex items-center gap-1 my-4">
+                      {getCategoryIcon(community.category)}<span className="text-md text-gray-500 font-semibold">{community.category}</span>
                     </div>
+                    <div className="flex gap-2 items-center">
                     <div className="flex items-center text-sm text-gray-600">
                       <Users className="w-4 h-4 mr-1" />
                       <span>{community.members ? community.members.toLocaleString() : '0'} Anggota</span>
